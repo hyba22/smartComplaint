@@ -85,6 +85,11 @@ public class User extends AbstractAuditingEntity<Long> implements Serializable {
     @Column(name = "reset_date")
     private Instant resetDate = null;
 
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false)
+    private Role role = Role.CLIENT;
+
     @JsonIgnore
     @ManyToMany
     @JoinTable(
@@ -201,6 +206,14 @@ public class User extends AbstractAuditingEntity<Long> implements Serializable {
         this.authorities = authorities;
     }
 
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -230,6 +243,7 @@ public class User extends AbstractAuditingEntity<Long> implements Serializable {
             ", activated='" + activated + '\'' +
             ", langKey='" + langKey + '\'' +
             ", activationKey='" + activationKey + '\'' +
+            ", role=" + role +
             "}";
     }
 }

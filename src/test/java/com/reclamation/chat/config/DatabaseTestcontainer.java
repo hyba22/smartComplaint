@@ -24,8 +24,8 @@ public class DatabaseTestcontainer implements SqlTestContainer, InitializingBean
     @Override
     public void afterPropertiesSet() {
         if (null == databaseContainer) {
-            databaseContainer = new PostgreSQLContainer("postgres:18.3")
-                .withDatabaseName("smartComplaint")
+            databaseContainer = new PostgreSQLContainer("postgres:17")
+                .withDatabaseName("smart_complaint")
                 .withLogConsumer(new Slf4jLogConsumer(LOG))
                 .withReuse(true);
         }

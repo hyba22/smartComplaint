@@ -8,6 +8,7 @@ import com.reclamation.chat.repository.UserRepository;
 import com.reclamation.chat.security.AuthoritiesConstants;
 import com.reclamation.chat.security.SecurityUtils;
 import com.reclamation.chat.service.dto.AdminUserDTO;
+import com.reclamation.chat.service.dto.RegistrationRequest;
 import com.reclamation.chat.service.dto.UserDTO;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -91,6 +92,46 @@ public class UserService {
                 this.clearUserCaches(user);
                 return user;
             });
+    }
+
+    public User registerUser(RegistrationRequest registrationRequest) {
+        userRepository
+            .findOneByLogin(registrationRequest.getLogin().toLowerCase())
+            .ifPresent(existingUser -> {
+                boolean removed = removeNonActivatedUser(existingUser);
+                if (!removed) {
+                    throw new UsernameAlreadyUsedException();
+                }
+            });
+        userRepository
+            .findOneByEmailIgnoreCase(registrationRequest.getEmail())
+            .ifPresent(existingUser -> {
+                boolean removed = removeNonActivatedUser(existingUser);
+                if (!removed) {
+                    throw new EmailAlreadyUsedException();
+                }
+            });
+        User newUser = new User();
+        String encryptedPassword = passwordEncoder.encode(registrationRequest.getPassword());
+        newUser.setLogin(registrationRequest.getLogin().toLowerCase());
+        newUser.setPassword(encryptedPassword);
+        newUser.setFirstName(registrationRequest.getFirstName());
+        newUser.setLastName(registrationRequest.getLastName());
+        if (registrationRequest.getEmail() != null) {
+            newUser.setEmail(registrationRequest.getEmail().toLowerCase());
+        }
+        newUser.setRole(registrationRequest.getRole());
+        // new user is not active
+        newUser.setActivated(false);
+        // new user gets registration key
+        newUser.setActivationKey(RandomUtil.generateActivationKey());
+        Set<Authority> authorities = new HashSet<>();
+        authorityRepository.findById(AuthoritiesConstants.USER).ifPresent(authorities::add);
+        newUser.setAuthorities(authorities);
+        userRepository.save(newUser);
+        this.clearUserCaches(newUser);
+        LOG.debug("Created Information for User: {}", newUser);
+        return newUser;
     }
 
     public User registerUser(AdminUserDTO userDTO, String password) {
