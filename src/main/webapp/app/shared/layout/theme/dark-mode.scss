@@ -1,0 +1,227 @@
+// Dark mode color variables
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --bg-tertiary: #f1f5f9;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --text-tertiary: #94a3b8;
+  --border-color: #e2e8f0;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+}
+
+.dark {
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-tertiary: #334155;
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-tertiary: #94a3b8;
+  --border-color: #334155;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5);
+}
+
+// Apply dark mode styles
+.dark-mode {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+
+  // Sidebar
+  .sidebar {
+    background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+    border-right-color: var(--border-color);
+
+    .sidebar-item {
+      color: var(--text-secondary);
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: var(--text-primary);
+      }
+
+      &.active {
+        background-color: rgba(59, 130, 246, 0.2);
+        color: #60a5fa;
+      }
+    }
+
+    .sidebar-user {
+      background-color: rgba(255, 255, 255, 0.05);
+      border-color: var(--border-color);
+    }
+  }
+
+  // Cards and containers
+  .bg-white {
+    background-color: var(--bg-secondary) !important;
+  }
+
+  .bg-slate-50 {
+    background-color: var(--bg-tertiary) !important;
+  }
+
+  .bg-slate-100 {
+    background-color: var(--bg-tertiary) !important;
+  }
+
+  // Text colors
+  .text-slate-800,
+  .text-slate-900 {
+    color: var(--text-primary) !important;
+  }
+
+  .text-slate-600,
+  .text-slate-700 {
+    color: var(--text-secondary) !important;
+  }
+
+  .text-slate-400,
+  .text-slate-500 {
+    color: var(--text-tertiary) !important;
+  }
+
+  // Borders
+  .border-slate-200,
+  .border-slate-300 {
+    border-color: var(--border-color) !important;
+  }
+
+  .divide-slate-200 > * + * {
+    border-color: var(--border-color) !important;
+  }
+
+  // Inputs
+  input,
+  textarea,
+  select {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+
+    &::placeholder {
+      color: var(--text-tertiary);
+    }
+
+    &:focus {
+      background-color: var(--bg-secondary);
+      border-color: #60a5fa;
+    }
+  }
+
+  // Tables
+  table {
+    thead {
+      background-color: var(--bg-tertiary) !important;
+      color: var(--text-primary) !important;
+    }
+
+    tbody {
+      tr {
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.05) !important;
+        }
+      }
+    }
+  }
+
+  // Modals
+  .modal-content {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+  }
+
+  .modal-header,
+  .modal-footer {
+    border-color: var(--border-color);
+  }
+
+  // Buttons
+  .btn-outline-secondary {
+    color: var(--text-secondary);
+    border-color: var(--border-color);
+
+    &:hover {
+      background-color: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+  }
+
+  // Dropdowns
+  .dropdown-menu {
+    background-color: var(--bg-secondary);
+    border-color: var(--border-color);
+    box-shadow: var(--shadow-lg);
+
+    .dropdown-item {
+      color: var(--text-primary);
+
+      &:hover {
+        background-color: var(--bg-tertiary);
+      }
+    }
+  }
+
+  // Notification dropdown
+  .notification-dropdown {
+    background-color: var(--bg-secondary);
+    border-color: var(--border-color);
+    box-shadow: var(--shadow-lg);
+  }
+
+  // Charts (if using chart libraries)
+  .recharts-wrapper {
+    .recharts-cartesian-grid-horizontal line,
+    .recharts-cartesian-grid-vertical line {
+      stroke: var(--border-color);
+    }
+
+    .recharts-text {
+      fill: var(--text-secondary);
+    }
+  }
+
+  // Shadows
+  .shadow-sm {
+    box-shadow: var(--shadow-sm) !important;
+  }
+
+  .shadow-md,
+  .shadow {
+    box-shadow: var(--shadow-md) !important;
+  }
+
+  .shadow-lg {
+    box-shadow: var(--shadow-lg) !important;
+  }
+
+  // Hover states
+  .hover\:bg-slate-50:hover {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+  }
+
+  .hover\:bg-slate-100:hover {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+  }
+
+  .hover\:bg-blue-50:hover {
+    background-color: rgba(59, 130, 246, 0.1) !important;
+  }
+
+  // Stat cards
+  .stat-card {
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+  }
+}
+
+// Smooth transitions for theme changes
+* {
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease;
+}

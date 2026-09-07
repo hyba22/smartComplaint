@@ -44,9 +44,6 @@
             </column>
             <column name="last_modified_by" type="varchar(50)"/>
             <column name="last_modified_date" type="timestamp"/>
-            <column name="role" type="varchar(50)">
-                <constraints nullable="false"/>
-            </column>
         </createTable>
 
         <createTable tableName="jhi_authority">

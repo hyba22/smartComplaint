@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="20260716093000-1" author="system">
+        <comment>Add classification and assignment fields to reclamation table</comment>
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="reclamation" columnName="classification_method"/>
+            </not>
+        </preConditions>
+
+        <!-- Classification metadata -->
+        <addColumn tableName="reclamation">
+            <column name="classification_method" type="varchar(20)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20260716093000-2" author="system">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="reclamation" columnName="classification_confidence"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="reclamation">
+            <column name="classification_confidence" type="double">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20260716093000-3" author="system">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="reclamation" columnName="feedback_comment"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="reclamation">
+            <column name="feedback_comment" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20260716093000-4" author="system">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="reclamation" columnName="assigned_to"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="reclamation">
+            <column name="assigned_to" type="bigint">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20260716093000-5" author="system">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="reclamation" columnName="assigned_date"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="reclamation">
+            <column name="assigned_date" type="${datetimeType}">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="20260716093000-6" author="system">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fk_reclamation_assigned_to"/>
+            </not>
+        </preConditions>
+        <!-- Foreign key for assigned_to -->
+        <addForeignKeyConstraint
+            baseTableName="reclamation"
+            baseColumnNames="assigned_to"
+            constraintName="fk_reclamation_assigned_to"
+            referencedTableName="jhi_user"
+            referencedColumnNames="id"/>
+    </changeSet>
+
+</databaseChangeLog>

@@ -13,7 +13,7 @@ const PrivateRoute = ({ children, hasAnyAuthorities = [], ...rest }: IOwnProps) 
   const isAuthenticated = useAppSelector(state => state.authentication.isAuthenticated);
   const sessionHasBeenFetched = useAppSelector(state => state.authentication.sessionHasBeenFetched);
   const account = useAppSelector(state => state.authentication.account);
-  const isAuthorized = hasAnyAuthority(account.authorities, hasAnyAuthorities);
+  const isAuthorized = hasAnyAuthority(account.authorities, hasAnyAuthorities, account.role);
   const pageLocation = useLocation();
 
   if (!children) {
@@ -48,20 +48,27 @@ const PrivateRoute = ({ children, hasAnyAuthorities = [], ...rest }: IOwnProps) 
   );
 };
 
-export const hasAnyAuthority = (authorities: string[], hasAnyAuthorities: string[]) => {
+export const hasAnyAuthority = (authorities: string[], hasAnyAuthorities: string[], role?: string) => {
+  if (hasAnyAuthorities.length === 0) {
+    return true;
+  }
+
+  // Check authorities array
   if (authorities && authorities.length !== 0) {
-    if (hasAnyAuthorities.length === 0) {
+    if (hasAnyAuthorities.some(auth => authorities.includes(auth))) {
       return true;
     }
-    return hasAnyAuthorities.some(auth => authorities.includes(auth));
   }
+
+  // Check role field - convert role to ROLE_XXX format for comparison
+  if (role) {
+    const roleAuthority = `ROLE_${role}`;
+    if (hasAnyAuthorities.includes(roleAuthority)) {
+      return true;
+    }
+  }
+
   return false;
 };
 
-/**
- * Checks authentication before showing the children and redirects to the
- * login page if the user is not authenticated.
- * If hasAnyAuthorities is provided the authorization status is also
- * checked and an error message is shown if the user is not authorized.
- */
 export default PrivateRoute;

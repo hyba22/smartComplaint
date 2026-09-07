@@ -26,7 +26,13 @@ module.exports = async () =>
     module: {
       rules: [
         {
+          test: /\.css$/,
+          exclude: /\.module\.css$/,
+          use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader'],
+        },
+        {
           test: /\.(sa|sc|c)ss$/,
+          exclude: /\.css$/,
           use: [
             {
               loader: MiniCssExtractPlugin.loader,

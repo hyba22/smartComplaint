@@ -19,6 +19,16 @@
     <property name="timeType" value="time(6)" dbms="postgresql"/>
 
     <include file="config/liquibase/changelog/00000000000000_initial_schema.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20250517190000_create_reclamation_table.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20260519193000_create_entreprise_table.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20260519210000_create_chat_tables.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20260523203000_add_role_column_to_user.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20260524173000_add_address_column_to_user.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20260614173000_add_entreprise_fk_to_user.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20260716093000_add_classification_and_assignment_fields.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20260810220000_add_message_type_column.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20260810230000_update_existing_message_types.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20260905140000_update_responsable_authorities.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
     <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints changelogs here -->
     <!-- jhipster-needle-liquibase-add-incremental-changelog - JHipster will add incremental liquibase changelogs here -->

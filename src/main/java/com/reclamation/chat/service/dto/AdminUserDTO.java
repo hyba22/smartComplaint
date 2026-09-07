@@ -2,6 +2,7 @@ package com.reclamation.chat.service.dto;
 
 import com.reclamation.chat.config.Constants;
 import com.reclamation.chat.domain.Authority;
+import com.reclamation.chat.domain.Role;
 import com.reclamation.chat.domain.User;
 import jakarta.validation.constraints.*;
 import java.io.Serial;
@@ -10,9 +11,6 @@ import java.time.Instant;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/**
- * A DTO representing a user, with his authorities.
- */
 public class AdminUserDTO implements Serializable {
 
     @Serial
@@ -35,6 +33,9 @@ public class AdminUserDTO implements Serializable {
     @Size(min = 5, max = 254)
     private String email;
 
+    @Size(max = 255)
+    private String address;
+
     @Size(max = 256)
     private String imageUrl;
 
@@ -53,6 +54,10 @@ public class AdminUserDTO implements Serializable {
 
     private Set<String> authorities;
 
+    private Role role;
+
+    private Long entrepriseId;
+
     public AdminUserDTO() {
         // Empty constructor needed for Jackson.
     }
@@ -63,6 +68,7 @@ public class AdminUserDTO implements Serializable {
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
         this.email = user.getEmail();
+        this.address = user.getAddress();
         this.activated = user.isActivated();
         this.imageUrl = user.getImageUrl();
         this.langKey = user.getLangKey();
@@ -71,6 +77,8 @@ public class AdminUserDTO implements Serializable {
         this.lastModifiedBy = user.getLastModifiedBy();
         this.lastModifiedDate = user.getLastModifiedDate();
         this.authorities = user.getAuthorities().stream().map(Authority::getName).collect(Collectors.toSet());
+        this.role = user.getRole();
+        this.entrepriseId = user.getEntreprise() != null ? user.getEntreprise().getId() : null;
     }
 
     public Long getId() {
@@ -111,6 +119,14 @@ public class AdminUserDTO implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public String getImageUrl() {
@@ -177,6 +193,22 @@ public class AdminUserDTO implements Serializable {
         this.authorities = authorities;
     }
 
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public Long getEntrepriseId() {
+        return entrepriseId;
+    }
+
+    public void setEntrepriseId(Long entrepriseId) {
+        this.entrepriseId = entrepriseId;
+    }
+
     // prettier-ignore
     @Override
     public String toString() {
@@ -185,6 +217,7 @@ public class AdminUserDTO implements Serializable {
             ", firstName='" + firstName + '\'' +
             ", lastName='" + lastName + '\'' +
             ", email='" + email + '\'' +
+            ", address='" + address + '\'' +
             ", imageUrl='" + imageUrl + '\'' +
             ", activated=" + activated +
             ", langKey='" + langKey + '\'' +

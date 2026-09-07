@@ -1,14 +1,15 @@
 import React, { useEffect } from 'react';
-import { Alert, Col, Row } from 'react-bootstrap';
+import { Alert } from 'react-bootstrap';
 import { Link, useSearchParams } from 'react-router';
 
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
 import { activateAction, reset } from './activate.reducer';
+import './activate.scss';
 
 const successAlert = (
   <Alert variant="success">
-    <strong>Votre compte utilisateur a été activé.</strong> Merci de vous
+    <strong>Félicitations !</strong> Votre compte a été activé avec succès. Vous pouvez maintenant vous{' '}
     <Link to="/login" className="alert-link">
       connecter
     </Link>
@@ -40,14 +41,12 @@ export const ActivatePage = () => {
   const { activationSuccess, activationFailure } = useAppSelector(state => state.activate);
 
   return (
-    <div>
-      <Row className="justify-content-center">
-        <Col md="8">
-          <h1>Activation</h1>
-          {activationSuccess ? successAlert : undefined}
-          {activationFailure ? failureAlert : undefined}
-        </Col>
-      </Row>
+    <div className="activate-page">
+      <div className="activate-page__container">
+        <h1>Activation</h1>
+        {activationSuccess ? successAlert : undefined}
+        {activationFailure ? failureAlert : undefined}
+      </div>
     </div>
   );
 };

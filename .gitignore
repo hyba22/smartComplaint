@@ -151,3 +151,12 @@ Desktop.ini
 ######################
 coverage/
 .nyc_output/
+
+######################
+# Environment Variables
+######################
+.env
+.env.local
+.env.*.local
+
+application.properties

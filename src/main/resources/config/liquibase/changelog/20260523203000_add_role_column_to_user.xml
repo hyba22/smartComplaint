@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="20260523203000-1" author="cascade">
+        <validCheckSum>ANY</validCheckSum>
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists columnName="role" tableName="jhi_user"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="jhi_user">
+            <column name="role" type="varchar(50)" defaultValue="CLIENT">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+        <update tableName="jhi_user">
+            <column name="role" value="ADMIN"/>
+            <where>login = 'admin'</where>
+        </update>
+
+        <update tableName="jhi_user">
+            <column name="role" value="CLIENT"/>
+            <where>login = 'user'</where>
+        </update>
+
+        <dropDefaultValue tableName="jhi_user" columnName="role" columnDataType="varchar(50)"/>
+    </changeSet>
+
+</databaseChangeLog>

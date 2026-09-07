@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Badge, Button, Table } from 'react-bootstrap';
 import { JhiItemCount, JhiPagination, TextFormat, getPaginationState } from 'react-jhipster';
 import { Link, useLocation, useNavigate } from 'react-router';
@@ -14,6 +15,7 @@ import { ASC, DESC, ITEMS_PER_PAGE, SORT } from 'app/shared/util/pagination.cons
 import { getUsersAsAdmin, updateUser } from './user-management.reducer';
 
 export const UserManagement = () => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
   const pageLocation = useLocation();
@@ -98,13 +100,13 @@ export const UserManagement = () => {
   return (
     <div>
       <h2 id="user-management-page-heading" data-cy="UserManagementHeading">
-        Utilisateurs
+        {t('users.title')}
         <div className="d-flex justify-content-end">
           <Button className="me-2" variant="info" onClick={handleSyncList} disabled={loading}>
-            <FontAwesomeIcon icon={faSync} spin={loading} /> Actualiser la liste
+            <FontAwesomeIcon icon={faSync} spin={loading} /> {t('common.refresh')}
           </Button>
           <Link to="new" className="btn btn-primary jh-create-entity" data-cy="entityCreateButton">
-            <FontAwesomeIcon icon={faPlus} /> Créer un nouvel utilisateur
+            <FontAwesomeIcon icon={faPlus} /> {t('users.newUser')}
           </Link>
         </div>
       </h2>
@@ -115,21 +117,21 @@ export const UserManagement = () => {
               ID <FontAwesomeIcon icon={getSortIconByFieldName('id')} />
             </th>
             <th className="hand" onClick={sort('login')}>
-              Login <FontAwesomeIcon icon={getSortIconByFieldName('login')} />
+              {t('users.login')} <FontAwesomeIcon icon={getSortIconByFieldName('login')} />
             </th>
             <th className="hand" onClick={sort('email')}>
-              Email <FontAwesomeIcon icon={getSortIconByFieldName('email')} />
+              {t('users.email')} <FontAwesomeIcon icon={getSortIconByFieldName('email')} />
             </th>
             <th />
-            <th>Droits</th>
+            <th>{t('users.role')}</th>
             <th className="hand" onClick={sort('createdDate')}>
-              Créé le <FontAwesomeIcon icon={getSortIconByFieldName('createdDate')} />
+              {t('users.createdDate')} <FontAwesomeIcon icon={getSortIconByFieldName('createdDate')} />
             </th>
             <th className="hand" onClick={sort('lastModifiedBy')}>
-              Modifié par <FontAwesomeIcon icon={getSortIconByFieldName('lastModifiedBy')} />
+              {t('users.lastModifiedBy')} <FontAwesomeIcon icon={getSortIconByFieldName('lastModifiedBy')} />
             </th>
             <th id="modified-date-sort" className="hand" onClick={sort('lastModifiedDate')}>
-              Modifié le <FontAwesomeIcon icon={getSortIconByFieldName('lastModifiedDate')} />
+              {t('users.lastModifiedDate')} <FontAwesomeIcon icon={getSortIconByFieldName('lastModifiedDate')} />
             </th>
             <th />
           </tr>
@@ -147,20 +149,16 @@ export const UserManagement = () => {
               <td>
                 {user.activated ? (
                   <Button variant="success" onClick={toggleActive(user)}>
-                    Activé
+                    {t('users.active')}
                   </Button>
                 ) : (
                   <Button variant="danger" onClick={toggleActive(user)}>
-                    Désactivé
+                    {t('users.inactive')}
                   </Button>
                 )}
               </td>
               <td>
-                {user.authorities?.map((authority, j) => (
-                  <div key={`user-auth-${i}-${j}`}>
-                    <Badge bg="info">{authority}</Badge>
-                  </div>
-                ))}
+                <Badge bg="info">{user.role || 'UTILISATEUR'}</Badge>
               </td>
               <td>{user.createdDate && <TextFormat value={user.createdDate} type="date" format={APP_DATE_FORMAT} blankOnInvalid />}</td>
               <td>{user.lastModifiedBy}</td>
@@ -170,10 +168,10 @@ export const UserManagement = () => {
               <td className="text-end">
                 <div className="btn-group flex-btn-group-container">
                   <Button as={Link as any} to={user.login} variant="info" size="sm" data-cy="entityDetailsButton">
-                    <FontAwesomeIcon icon={faEye} /> <span className="d-none d-md-inline">Voir</span>
+                    <FontAwesomeIcon icon={faEye} /> <span className="d-none d-md-inline">{t('common.view')}</span>
                   </Button>
                   <Button as={Link as any} to={`${user.login}/edit`} variant="primary" size="sm" data-cy="entityEditButton">
-                    <FontAwesomeIcon icon={faPencilAlt} /> <span className="d-none d-md-inline">Editer</span>
+                    <FontAwesomeIcon icon={faPencilAlt} /> <span className="d-none d-md-inline">{t('common.edit')}</span>
                   </Button>
                   <Button
                     as={Link as any}
@@ -183,7 +181,7 @@ export const UserManagement = () => {
                     disabled={account.login === user.login}
                     data-cy="entityDeleteButton"
                   >
-                    <FontAwesomeIcon icon={faTrash} /> <span className="d-none d-md-inline">Supprimer</span>
+                    <FontAwesomeIcon icon={faTrash} /> <span className="d-none d-md-inline">{t('common.delete')}</span>
                   </Button>
                 </div>
               </td>

@@ -1,10 +1,128 @@
-/* ==========================================================================
-Main page styles
-========================================================================== */
-.hipster {
+.home-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 4rem 1.5rem 6rem;
+}
+
+.home-hero {
+  position: relative;
+  padding: 3.5rem 1rem 2.5rem;
+  text-align: center;
+}
+
+.home-hero h1 {
+  font-size: clamp(2.75rem, 6vw, 3.6rem);
+  font-weight: 700;
+  color: #143362;
+  margin-bottom: 1.75rem;
+}
+
+.home-hero__intro {
+  margin: 0 auto 1rem;
+  max-width: 720px;
+  font-size: 1.12rem;
+  line-height: 1.8;
+  color: #4b5563;
+}
+
+.home-hero__actions {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.home-hero__btn {
   display: inline-block;
+  padding: 0.75rem 2rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  font-size: 1rem;
+}
+
+.home-hero__btn--primary {
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  color: white;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
+  }
+}
+
+.home-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 4rem;
+  margin-top: 3.5rem;
+}
+
+.home-section {
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+}
+
+.home-section--reverse {
+  flex-direction: row-reverse;
+}
+
+.home-section__text {
+  flex: 1;
+}
+
+.home-section__text h2 {
+  margin-bottom: 1rem;
+  font-size: 1.85rem;
+  font-weight: 600;
+  color: #143362;
+}
+
+.home-section__text p {
+  margin: 0;
+  font-size: 1.1rem;
+  line-height: 1.9;
+  color: #4b5563;
+}
+
+.home-section__image {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.home-section__image img {
   width: 100%;
-  height: 497px;
-  background: url('/content/images/jhipster_family_member_2.svg') no-repeat center top;
-  background-size: contain;
+  max-width: 360px;
+  height: auto;
+}
+
+@media (max-width: 992px) {
+  .home-container {
+    padding: 3rem 1.25rem 4rem;
+  }
+
+  .home-section,
+  .home-section--reverse {
+    flex-direction: column;
+    text-align: center;
+    gap: 2.5rem;
+  }
+
+  .home-section__image {
+    order: -1;
+  }
+}
+
+@media (max-width: 576px) {
+  .home-hero {
+    padding: 2.75rem 1rem 2rem;
+  }
+
+  .home-hero__intro {
+    font-size: 1rem;
+  }
 }

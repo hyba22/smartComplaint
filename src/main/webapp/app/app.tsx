@@ -1,62 +1,77 @@
 import 'react-toastify/dist/ReactToastify.css';
 import './app.scss';
 import 'app/config/dayjs';
+import 'app/config/i18n';
 
 import React, { useEffect } from 'react';
 import { Card } from 'react-bootstrap';
-import { BrowserRouter } from 'react-router';
+import { BrowserRouter, useLocation } from 'react-router';
 
 import { ToastContainer } from 'react-toastify';
 
-import { useAppDispatch, useAppSelector } from 'app/config/store';
+import { useAppDispatch } from 'app/config/store';
 import AppRoutes from 'app/routes';
-import { hasAnyAuthority } from 'app/shared/auth/private-route';
 import ErrorBoundary from 'app/shared/error/error-boundary';
-import { Authority } from 'app/shared/jhipster/constants';
 import Footer from 'app/shared/layout/footer/footer';
 import Header from 'app/shared/layout/header/header';
 import { getProfile } from 'app/shared/reducers/application-profile';
 import { getSession } from 'app/shared/reducers/authentication';
 
-const baseHref = document.querySelector('base').getAttribute('href').replace(/\/$/, '');
+const baseHref = document.querySelector('base')?.getAttribute('href')?.replace(/\/$/, '') ?? '';
 
-export const App = () => {
+const AppContent = () => {
   const dispatch = useAppDispatch();
+  const location = useLocation();
 
   useEffect(() => {
     dispatch(getSession());
     dispatch(getProfile());
   }, []);
 
-  const isAuthenticated = useAppSelector(state => state.authentication.isAuthenticated);
-  const isAdmin = useAppSelector(state => hasAnyAuthority(state.authentication.account.authorities, [Authority.ADMIN]));
-  const ribbonEnv = useAppSelector(state => state.applicationProfile.ribbonEnv);
-  const isInProduction = useAppSelector(state => state.applicationProfile.inProduction);
-  const isOpenAPIEnabled = useAppSelector(state => state.applicationProfile.isOpenAPIEnabled);
+  const shouldShowHeader =
+    !location.pathname.startsWith('/admin') &&
+    !location.pathname.startsWith('/client') &&
+    !location.pathname.startsWith('/conseiller') &&
+    !location.pathname.startsWith('/responsable') &&
+    !location.pathname.startsWith('/files') &&
+    !location.pathname.startsWith('/chat') &&
+    !location.pathname.startsWith('/account/settings');
 
-  const paddingTop = '60px';
+  const paddingTop = shouldShowHeader ? '60px' : '0px';
+  const shouldShowCard = shouldShowHeader;
+
+  return (
+    <div className="app-container" style={{ paddingTop }}>
+      <ToastContainer position="top-left" className="toastify-container" toastClassName="toastify-toast" />
+      {shouldShowHeader && (
+        <ErrorBoundary>
+          <Header />
+        </ErrorBoundary>
+      )}
+      {shouldShowCard ? (
+        <>
+          <div className="container-fluid view-container" id="app-view-container">
+            <Card className="jh-card">
+              <ErrorBoundary>
+                <AppRoutes />
+              </ErrorBoundary>
+            </Card>
+          </div>
+          <Footer />
+        </>
+      ) : (
+        <ErrorBoundary>
+          <AppRoutes />
+        </ErrorBoundary>
+      )}
+    </div>
+  );
+};
+
+export const App = () => {
   return (
     <BrowserRouter basename={baseHref}>
-      <div className="app-container" style={{ paddingTop }}>
-        <ToastContainer position="top-left" className="toastify-container" toastClassName="toastify-toast" />
-        <ErrorBoundary>
-          <Header
-            isAuthenticated={isAuthenticated}
-            isAdmin={isAdmin}
-            ribbonEnv={ribbonEnv}
-            isInProduction={isInProduction}
-            isOpenAPIEnabled={isOpenAPIEnabled}
-          />
-        </ErrorBoundary>
-        <div className="container-fluid view-container" id="app-view-container">
-          <Card className="jh-card">
-            <ErrorBoundary>
-              <AppRoutes />
-            </ErrorBoundary>
-          </Card>
-          <Footer />
-        </div>
-      </div>
+      <AppContent />
     </BrowserRouter>
   );
 };

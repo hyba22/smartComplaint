@@ -41,8 +41,20 @@ spring:
   liquibase:
     contexts: prod
   mail:
-    host: localhost
-    port: 25
+    host: smtp.gmail.com
+    port: 587
+    username: test.test04180722@gmail.com
+    password: bclyvmnczjeiotas
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
   thymeleaf:
     cache: true
 
@@ -50,10 +62,10 @@ spring:
 # To enable TLS in production, generate a certificate using:
 # keytool -genkey -alias smartcomplaint -storetype PKCS12 -keyalg RSA -keysize 2048 -keystore keystore.p12 -validity 3650
 #
-# You can also use Let's Encrypt:
+# we can also use Let's Encrypt:
 # See details in topic "Create a Java Keystore (.JKS) from Let's Encrypt Certificates" on https://maximilian-boehm.com/en-gb/blog
 #
-# Then, modify the server.ssl properties so your "server" configuration looks like:
+# Then, modify the server.ssl properties so the "server" configuration looks like:
 #
 # server:
 #   port: 443
@@ -66,7 +78,7 @@ spring:
 #     ciphers: TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 ,TLS_DHE_RSA_WITH_AES_128_GCM_SHA256 ,TLS_DHE_RSA_WITH_AES_256_GCM_SHA384 ,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384,TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_RSA_WITH_AES_128_CBC_SHA,TLS_DHE_RSA_WITH_AES_256_CBC_SHA256,TLS_DHE_RSA_WITH_AES_256_CBC_SHA,TLS_RSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_256_GCM_SHA384,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_256_CBC_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_256_CBC_SHA,TLS_DHE_RSA_WITH_CAMELLIA_256_CBC_SHA,TLS_RSA_WITH_CAMELLIA_256_CBC_SHA,TLS_DHE_RSA_WITH_CAMELLIA_128_CBC_SHA,TLS_RSA_WITH_CAMELLIA_128_CBC_SHA
 # ===================================================================
 server:
-  port: 8080
+  port: 8282
   shutdown: graceful # see https://docs.spring.io/spring-boot/reference/web/graceful-shutdown.html#web.graceful-shutdown
   compression:
     enabled: true
@@ -94,7 +106,8 @@ jhipster:
         token-validity-in-seconds: 86400
         token-validity-in-seconds-for-remember-me: 2592000
   mail: # specific JHipster mail property, for standard properties see MailProperties
-    base-url: http://my-server-url-to-change # Modify according to your server's URL
+    from: test.test04180722@gmail.com
+    base-url: http://localhost:9000 # Modify according to the server's URL
   logging:
     use-json-format: false # By default, logs are not in Json format
     logstash: # Forward logs to logstash over a socket, used by LoggingConfiguration
@@ -104,7 +117,7 @@ jhipster:
       ring-buffer-size: 512
 # ===================================================================
 # Application specific properties
-# Add your own application properties here, see the ApplicationProperties class
+# Add application properties here, see the ApplicationProperties class
 # to have type-safe configuration, like in the JHipsterProperties above
 #
 # More documentation is available at:

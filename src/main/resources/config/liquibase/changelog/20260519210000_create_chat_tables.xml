@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="20260519210000-1" author="cascade">
+        <createTable tableName="conversation">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="id_conversation" type="varchar(50)">
+                <constraints nullable="false" unique="true" />
+            </column>
+            <column name="date_debut" type="timestamp" />
+            <column name="date_fin" type="timestamp" />
+            <column name="statut" type="varchar(50)" />
+            <column name="created_by" type="varchar(50)" />
+            <column name="created_date" type="timestamp" />
+            <column name="last_modified_by" type="varchar(50)" />
+            <column name="last_modified_date" type="timestamp" />
+        </createTable>
+
+        <createTable tableName="conversation_participant">
+            <column name="conversation_id" type="bigint">
+                <constraints nullable="false" />
+            </column>
+            <column name="user_id" type="bigint">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+
+        <addPrimaryKey tableName="conversation_participant" columnNames="conversation_id, user_id" constraintName="pk_conversation_participant" />
+
+        <addForeignKeyConstraint
+            baseTableName="conversation_participant"
+            baseColumnNames="conversation_id"
+            referencedTableName="conversation"
+            referencedColumnNames="id"
+            constraintName="fk_conversation_participant_conversation"
+            onDelete="CASCADE"
+        />
+
+        <addForeignKeyConstraint
+            baseTableName="conversation_participant"
+            baseColumnNames="user_id"
+            referencedTableName="jhi_user"
+            referencedColumnNames="id"
+            constraintName="fk_conversation_participant_user"
+            onDelete="CASCADE"
+        />
+
+        <createIndex tableName="conversation_participant" indexName="idx_conversation_participant_user">
+            <column name="user_id" />
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="20260519210000-2" author="cascade">
+        <createTable tableName="message">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="id_msg" type="varchar(60)">
+                <constraints nullable="false" unique="true" />
+            </column>
+            <column name="contenu" type="clob" />
+            <column name="date_envoi" type="timestamp">
+                <constraints nullable="false" />
+            </column>
+            <column name="est_lu" type="boolean" />
+            <column name="piece_jointe" type="varchar(500)" />
+            <column name="conversation_id" type="bigint">
+                <constraints nullable="false" />
+            </column>
+            <column name="sender_id" type="bigint" />
+            <column name="created_by" type="varchar(50)" />
+            <column name="created_date" type="timestamp" />
+            <column name="last_modified_by" type="varchar(50)" />
+            <column name="last_modified_date" type="timestamp" />
+        </createTable>
+
+        <addForeignKeyConstraint
+            baseTableName="message"
+            baseColumnNames="conversation_id"
+            referencedTableName="conversation"
+            referencedColumnNames="id"
+            constraintName="fk_message_conversation"
+            onDelete="CASCADE"
+        />
+
+        <addForeignKeyConstraint
+            baseTableName="message"
+            baseColumnNames="sender_id"
+            referencedTableName="jhi_user"
+            referencedColumnNames="id"
+            constraintName="fk_message_sender"
+            onDelete="SET NULL"
+        />
+
+        <createIndex tableName="message" indexName="idx_message_conversation">
+            <column name="conversation_id" />
+        </createIndex>
+
+        <createIndex tableName="message" indexName="idx_message_date_envoi">
+            <column name="date_envoi" />
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

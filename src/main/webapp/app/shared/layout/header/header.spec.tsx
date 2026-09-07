@@ -1,15 +1,18 @@
+/* eslint-disable spaced-comment */
+/// <reference types="jest" />
+/* eslint-enable spaced-comment */
 import React from 'react';
 import { MemoryRouter } from 'react-router';
 
 import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 
-import initStore from 'app/config/store';
+import initStore from '../../../config/store';
 
 import Header from './header';
 
 describe('Header', () => {
-  let mountedWrapper;
+  let mountedWrapper: string | undefined;
   const devProps = {
     isAuthenticated: true,
     isAdmin: true,

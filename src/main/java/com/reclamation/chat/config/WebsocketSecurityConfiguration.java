@@ -1,6 +1,5 @@
 package com.reclamation.chat.config;
 
-import com.reclamation.chat.security.AuthoritiesConstants;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
@@ -20,15 +19,10 @@ public class WebsocketSecurityConfiguration {
         return MessageMatcherDelegatingAuthorizationManager.builder()
             .nullDestMatcher()
             .authenticated()
-            .simpDestMatchers("/topic/tracker")
-            .hasAuthority(AuthoritiesConstants.ADMIN)
-            // matches any destination that starts with /topic/
-            // (i.e. cannot send messages directly to /topic/)
-            // (i.e. cannot subscribe to /topic/messages/* to get messages sent to
-            // /topic/messages-user<id>)
             .simpDestMatchers("/topic/**")
             .authenticated()
-            // message types other than MESSAGE and SUBSCRIBE
+            .simpDestMatchers("/app/chat/**", "/app/topic/activity")
+            .authenticated()
             .simpTypeMatchers(SimpMessageType.MESSAGE, SimpMessageType.SUBSCRIBE)
             .denyAll()
             .anyMessage()

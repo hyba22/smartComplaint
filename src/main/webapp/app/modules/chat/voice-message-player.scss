@@ -1,0 +1,65 @@
+.voice-message-player {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 180px;
+  max-width: 280px;
+
+  .play-button {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background-color: currentColor;
+    color: white;
+
+    &:hover {
+      transform: scale(1.05);
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
+  }
+
+  &.outbound {
+    color: #007bff;
+  }
+
+  &.inbound {
+    color: #128c7e;
+  }
+
+  .progress-container {
+    flex: 1;
+    height: 4px;
+    background-color: currentColor;
+    opacity: 0.2;
+    border-radius: 2px;
+    cursor: pointer;
+    position: relative;
+
+    .progress-bar {
+      height: 100%;
+      background-color: currentColor;
+      opacity: 1;
+      border-radius: 2px;
+      transition: width 0.1s linear;
+    }
+  }
+
+  .time-display {
+    flex-shrink: 0;
+    font-size: 11px;
+    font-weight: 500;
+    min-width: 30px;
+    text-align: right;
+    color: currentColor;
+  }
+}

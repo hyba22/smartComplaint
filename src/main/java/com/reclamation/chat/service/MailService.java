@@ -5,8 +5,11 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.mail.autoconfigure.*;
 import org.springframework.context.MessageSource;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -17,11 +20,6 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 import tech.jhipster.config.JHipsterProperties;
 
-/**
- * Service for sending emails asynchronously.
- * <p>
- * We use the {@link Async} annotation to send emails asynchronously.
- */
 @Service
 public class MailService {
 
@@ -39,16 +37,20 @@ public class MailService {
 
     private final SpringTemplateEngine templateEngine;
 
+    private final MailProperties mailProperties;
+
     public MailService(
         JHipsterProperties jHipsterProperties,
         JavaMailSender javaMailSender,
         MessageSource messageSource,
-        SpringTemplateEngine templateEngine
+        SpringTemplateEngine templateEngine,
+        ObjectProvider<MailProperties> mailPropertiesProvider
     ) {
         this.jHipsterProperties = jHipsterProperties;
         this.javaMailSender = javaMailSender;
         this.messageSource = messageSource;
         this.templateEngine = templateEngine;
+        this.mailProperties = Optional.ofNullable(mailPropertiesProvider.getIfAvailable()).orElseGet(MailProperties::new);
     }
 
     @Async
@@ -57,13 +59,20 @@ public class MailService {
     }
 
     private void sendEmailSync(String to, String subject, String content, boolean isMultipart, boolean isHtml) {
-        LOG.debug(
-            "Send email[multipart '{}' and html '{}'] to '{}' with subject '{}' and content={}",
+        var mailProps = jHipsterProperties.getMail();
+        String host = Optional.ofNullable(mailProperties.getHost()).orElse("(unknown)");
+        Integer portValue = mailProperties.getPort();
+        String port = portValue != null ? portValue.toString() : "(default)";
+        String username = Optional.ofNullable(mailProperties.getUsername()).orElse("(anonymous)");
+        LOG.info(
+            "Preparing email [multipart={}, html={}] to='{}' subject='{}' via {}:{} as '{}'.",
             isMultipart,
             isHtml,
             to,
             subject,
-            content
+            host,
+            port,
+            username
         );
 
         // Prepare message using a Spring helper
@@ -71,13 +80,16 @@ public class MailService {
         try {
             MimeMessageHelper message = new MimeMessageHelper(mimeMessage, isMultipart, StandardCharsets.UTF_8.name());
             message.setTo(to);
-            message.setFrom(jHipsterProperties.getMail().getFrom());
+            String fromAddress = Optional.ofNullable(mailProps.getFrom()).orElseGet(() ->
+                Optional.ofNullable(mailProperties.getUsername()).orElse("")
+            );
+            message.setFrom(fromAddress);
             message.setSubject(subject);
             message.setText(content, isHtml);
             javaMailSender.send(mimeMessage);
-            LOG.debug("Sent email to User '{}'", to);
+            LOG.info("Email successfully handed to SMTP server for user '{}'", to);
         } catch (MailException | MessagingException e) {
-            LOG.warn("Email could not be sent to user '{}'", to, e);
+            LOG.error("Email delivery failed to '{}' using {}:{} as '{}'. Reason: {}", to, host, port, username, e.getMessage(), e);
         }
     }
 
@@ -88,13 +100,14 @@ public class MailService {
 
     private void sendEmailFromTemplateSync(User user, String templateName, String titleKey) {
         if (user.getEmail() == null) {
-            LOG.debug("Email doesn't exist for user '{}'", user.getLogin());
+            LOG.warn("Skipping email template '{}' because user '{}' has no email address.", templateName, user.getLogin());
             return;
         }
         Locale locale = Locale.forLanguageTag(user.getLangKey());
         Context context = new Context(locale);
         context.setVariable(USER, user);
         context.setVariable(BASE_URL, jHipsterProperties.getMail().getBaseUrl());
+        context.setVariable("temporaryPassword", user.getTemporaryPassword());
         String content = templateEngine.process(templateName, context);
         String subject = messageSource.getMessage(titleKey, null, locale);
         sendEmailSync(user.getEmail(), subject, content, false, true);

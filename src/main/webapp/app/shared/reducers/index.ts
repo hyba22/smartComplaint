@@ -12,8 +12,7 @@ import userManagement from 'app/modules/administration/user-management/user-mana
 
 import applicationProfile from './application-profile';
 import authentication from './authentication';
-
-/* jhipster-needle-add-reducer-import - JHipster will add reducer here */
+import notification from './notification';
 
 const rootReducer: ReducersMapObject = {
   authentication,
@@ -25,8 +24,8 @@ const rootReducer: ReducersMapObject = {
   passwordReset,
   password,
   settings,
+  notification,
   loadingBar,
-  /* jhipster-needle-add-reducer-combine - JHipster will add reducer here */
   ...entitiesReducers,
 };
 

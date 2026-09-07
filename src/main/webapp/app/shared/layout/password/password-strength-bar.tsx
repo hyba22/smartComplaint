@@ -1,12 +1,14 @@
 import './password-strength-bar.scss';
 
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 export interface IPasswordStrengthBarProps {
   password: string;
 }
 
 export const PasswordStrengthBar = ({ password }: IPasswordStrengthBarProps) => {
+  const { t } = useTranslation();
   const colors = ['#F00', '#F90', '#FF0', '#9F0', '#0F0'];
 
   const measureStrength = (p: string): number => {
@@ -64,7 +66,7 @@ export const PasswordStrengthBar = ({ password }: IPasswordStrengthBarProps) => 
 
   return (
     <div id="strength">
-      <small>Robustesse du mot de passe :</small>
+      <small>{t('auth.passwordStrength')}:</small>
       <ul id="strengthBar">{points}</ul>
     </div>
   );

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <!-- Create reclamation table -->
+    <changeSet id="20250517190000-1" author="admin">
+        <preConditions onFail="MARK_RAN" onError="MARK_RAN">
+            <not>
+                <tableExists tableName="reclamation"/>
+            </not>
+        </preConditions>
+        <createTable tableName="reclamation">
+            <!-- Primary key ID -->
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            
+            <!-- Unique identifier for the reclamation -->
+            <column name="id_reclamation" type="varchar(100)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            
+            <!-- Title of the reclamation -->
+            <column name="titre" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            
+            <!-- Description of the reclamation -->
+            <column name="description" type="clob"/>
+            
+            <!-- Date when the reclamation was submitted -->
+            <column name="date_depot" type="timestamp"/>
+            
+            <!-- Date when the reclamation was resolved -->
+            <column name="date_resolution" type="timestamp"/>
+            
+            <!-- Status of the reclamation -->
+            <column name="statut" type="varchar(50)"/>
+            
+            <!-- Priority level -->
+            <column name="niveau" type="varchar(50)"/>
+            
+            <!-- Path or URL to attached file -->
+            <column name="piece_jointe" type="varchar(500)"/>
+            
+            <!-- Priority score -->
+            <column name="score" type="integer"/>
+            
+            <!-- Audit fields - automatically managed by AbstractAuditingEntity -->
+            <column name="created_by" type="varchar(50)"/>
+            <column name="created_date" type="timestamp"/>
+            <column name="last_modified_by" type="varchar(50)"/>
+            <column name="last_modified_date" type="timestamp"/>
+        </createTable>
+        
+        <!-- Create index on id_reclamation for faster lookups -->
+        <createIndex tableName="reclamation" indexName="idx_reclamation_id_reclamation" unique="true">
+            <column name="id_reclamation"/>
+        </createIndex>
+        
+        <!-- Create index on statut for filtering by status -->
+        <createIndex tableName="reclamation" indexName="idx_reclamation_statut">
+            <column name="statut"/>
+        </createIndex>
+        
+        <!-- Create index on niveau for filtering by priority -->
+        <createIndex tableName="reclamation" indexName="idx_reclamation_niveau">
+            <column name="niveau"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

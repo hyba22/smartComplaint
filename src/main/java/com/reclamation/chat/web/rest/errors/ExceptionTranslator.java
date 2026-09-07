@@ -39,10 +39,6 @@ import tech.jhipster.web.rest.errors.ProblemDetailWithCause;
 import tech.jhipster.web.rest.errors.ProblemDetailWithCause.ProblemDetailWithCauseBuilder;
 import tech.jhipster.web.util.HeaderUtil;
 
-/**
- * Controller advice to translate the server side exceptions to client-friendly json structures.
- * The error response follows RFC7807 - Problem Details for HTTP APIs (https://tools.ietf.org/html/rfc7807).
- */
 @ControllerAdvice
 public class ExceptionTranslator extends ResponseEntityExceptionHandler {
 
@@ -53,7 +49,7 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(ExceptionTranslator.class);
 
-    @Value("${jhipster.clientApp.name:smartComplaint}")
+    @Value("${jhipster.clientApp.name:speedComplaintApp}")
     private String applicationName;
 
     private final Environment env;

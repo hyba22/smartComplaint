@@ -27,7 +27,13 @@ module.exports = async options =>
     module: {
       rules: [
         {
+          test: /\.css$/,
+          exclude: /\.module\.css$/,
+          use: ['style-loader', 'css-loader', 'postcss-loader'],
+        },
+        {
           test: /\.(sa|sc|c)ss$/,
+          exclude: /\.css$/,
           use: [
             'style-loader',
             {
@@ -54,13 +60,13 @@ module.exports = async options =>
       proxy: [
         {
           context: ['/api', '/services', '/management', '/v3/api-docs', '/h2-console'],
-          target: `http${options.tls ? 's' : ''}://localhost:8080`,
+          target: `http${options.tls ? 's' : ''}://localhost:8282`,
           secure: false,
           changeOrigin: options.tls,
         },
         {
           context: ['/websocket'],
-          target: 'ws://127.0.0.1:8080',
+          target: 'ws://127.0.0.1:8282',
           ws: true,
         },
       ],
@@ -79,7 +85,7 @@ module.exports = async options =>
           host: 'localhost',
           port: 9000,
           proxy: {
-            target: `http${options.tls ? 's' : ''}://localhost:${options.watch ? '8080' : '9060'}`,
+            target: `http${options.tls ? 's' : ''}://localhost:${options.watch ? '8282' : '9060'}`,
             ws: true,
             proxyOptions: {
               changeOrigin: false, //pass the Host header to the backend unchanged https://github.com/Browsersync/browser-sync/issues/430
@@ -103,7 +109,7 @@ module.exports = async options =>
         },
       ),
       new WebpackNotifierPlugin({
-        title: 'Smart Complaint',
+        title: 'Speed Complaint',
         contentImage: path.join(__dirname, 'logo-jhipster.png'),
       }),
     ].filter(Boolean),

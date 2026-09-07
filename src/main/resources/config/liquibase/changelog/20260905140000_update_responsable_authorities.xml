@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="20260905140000-1" author="devin">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="jhi_authority"/>
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM jhi_authority WHERE name = 'ROLE_RESPONSABLE'
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="jhi_authority">
+            <column name="name" value="ROLE_RESPONSABLE"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="20260905140000-2" author="devin">
+        <preConditions onFail="CONTINUE">
+            <tableExists tableName="jhi_user"/>
+            <tableExists tableName="jhi_user_authority"/>
+            <columnExists columnName="role" tableName="jhi_user"/>
+        </preConditions>
+
+        <!-- Assign ROLE_ADMIN and ROLE_RESPONSABLE authorities to existing RESPONSABLE users -->
+        <sql>
+            INSERT INTO jhi_user_authority (user_id, authority_name)
+            SELECT u.id, 'ROLE_ADMIN'
+            FROM jhi_user u
+            WHERE u.role = 'RESPONSABLE'
+              AND NOT EXISTS (
+                SELECT 1 FROM jhi_user_authority ua
+                WHERE ua.user_id = u.id AND ua.authority_name = 'ROLE_ADMIN'
+              );
+        </sql>
+
+        <sql>
+            INSERT INTO jhi_user_authority (user_id, authority_name)
+            SELECT u.id, 'ROLE_RESPONSABLE'
+            FROM jhi_user u
+            WHERE u.role = 'RESPONSABLE'
+              AND NOT EXISTS (
+                SELECT 1 FROM jhi_user_authority ua
+                WHERE ua.user_id = u.id AND ua.authority_name = 'ROLE_RESPONSABLE'
+              );
+        </sql>
+
+        <!-- Ensure existing RESPONSABLE users also have ROLE_USER -->
+        <sql>
+            INSERT INTO jhi_user_authority (user_id, authority_name)
+            SELECT u.id, 'ROLE_USER'
+            FROM jhi_user u
+            WHERE u.role = 'RESPONSABLE'
+              AND NOT EXISTS (
+                SELECT 1 FROM jhi_user_authority ua
+                WHERE ua.user_id = u.id AND ua.authority_name = 'ROLE_USER'
+              );
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

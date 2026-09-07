@@ -19,6 +19,7 @@ logging:
     tech.jhipster: DEBUG
     org.hibernate.SQL: DEBUG
     com.reclamation.chat: DEBUG
+    org.springframework.mail: DEBUG
 
 spring:
   devtools:
@@ -26,18 +27,16 @@ spring:
       enabled: true
       additional-exclude: static/**,.h2.server.properties
     livereload:
-      enabled: false # we use Webpack dev server + BrowserSync for livereload
+      enabled: false # use Webpack dev server + BrowserSync for livereload
   docker:
     compose:
       enabled: false
-      profiles:
-        active: dev
   jackson2:
     serialization:
       indent-output: true
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:h2:file:./target/h2db/db/smartComplaint;DB_CLOSE_DELAY=-1
+    url: jdbc:h2:file:./target/h2db/db/smartcomplaint;DB_CLOSE_DELAY=-1
     hikari:
       poolName: Hikari
       auto-commit: false
@@ -45,19 +44,40 @@ spring:
     console:
       # JHipster uses a custom h2-console initializer
       enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: update
   liquibase:
-    # Remove 'faker' if you do not want the sample data to be loaded automatically
+    # Remove 'faker' if not wanted the sample data to be loaded automatically
     contexts: dev, faker
   mail:
-    host: localhost
-    port: 25
+    host: smtp.gmail.com
+    port: 587
+    username: test.test04180722@gmail.com
+    password: bclyvmnczjeiotas
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+    test-connection: false
+    # Alternative: Use Mailtrap for testing (comment out Gmail above)
+    # host: sandbox.smtp.mailtrap.io
+    # port: 2525
+    # username: your-mailtrap-username
+    # password: your-mailtrap-password
   messages:
     cache-duration: PT1S # 1 second, see the ISO 8601 standard
   thymeleaf:
     cache: false
 
 server:
-  port: 8080
+  port: 8282
   # make sure requests the proxy uri instead of the server one
   forward-headers-strategy: native
 
@@ -90,7 +110,8 @@ jhipster:
         token-validity-in-seconds: 86400
         token-validity-in-seconds-for-remember-me: 2592000
   mail: # specific JHipster mail property, for standard properties see MailProperties
-    base-url: http://127.0.0.1:8080
+    from: test.test04180722@gmail.com
+    base-url: http://localhost:9000
   logging:
     use-json-format: false # By default, logs are not in Json format
     logstash: # Forward logs to logstash over a socket, used by LoggingConfiguration
@@ -100,7 +121,7 @@ jhipster:
       ring-buffer-size: 512
 # ===================================================================
 # Application specific properties
-# Add your own application properties here, see the ApplicationProperties class
+# Add application properties here, see the ApplicationProperties class
 # to have type-safe configuration, like in the JHipsterProperties above
 #
 # More documentation is available at:
@@ -108,3 +129,8 @@ jhipster:
 # ===================================================================
 
 # application:
+
+cloudflare:
+  ai:
+    account-id: ${CLOUDFLARE_AI_ACCOUNT_ID}
+    api-token: ${CLOUDFLARE_AI_API_TOKEN}

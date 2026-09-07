@@ -1,0 +1,18 @@
+.register-form--entreprise {
+  .register-form__section {
+    padding: 1.25rem 0 0.5rem;
+    border-bottom: 1px solid rgba(20, 51, 98, 0.08);
+
+    &:last-of-type {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+  }
+
+  .register-form__section-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #143362;
+    margin-bottom: 1.5rem;
+  }
+}

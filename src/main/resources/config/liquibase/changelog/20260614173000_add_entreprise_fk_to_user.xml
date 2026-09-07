@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet id="20260614173000-add-entreprise-fk-to-user" author="cascade">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <not>
+                    <columnExists tableName="jhi_user" columnName="entreprise_id" />
+                </not>
+                <not>
+                    <foreignKeyConstraintExists foreignKeyName="fk_jhi_user_entreprise" />
+                </not>
+            </and>
+        </preConditions>
+        <addColumn tableName="jhi_user">
+            <column name="entreprise_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <addForeignKeyConstraint
+            baseTableName="jhi_user"
+            baseColumnNames="entreprise_id"
+            constraintName="fk_jhi_user_entreprise"
+            referencedTableName="entreprise"
+            referencedColumnNames="id" />
+        <createIndex tableName="jhi_user" indexName="idx_jhi_user_entreprise_id">
+            <column name="entreprise_id" />
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

@@ -2,8 +2,13 @@ package com.reclamation.chat.service;
 
 import com.reclamation.chat.config.Constants;
 import com.reclamation.chat.domain.Authority;
+import com.reclamation.chat.domain.Conversation;
+import com.reclamation.chat.domain.Entreprise;
+import com.reclamation.chat.domain.Role;
 import com.reclamation.chat.domain.User;
 import com.reclamation.chat.repository.AuthorityRepository;
+import com.reclamation.chat.repository.ConversationRepository;
+import com.reclamation.chat.repository.EntrepriseRepository;
 import com.reclamation.chat.repository.UserRepository;
 import com.reclamation.chat.security.AuthoritiesConstants;
 import com.reclamation.chat.security.SecurityUtils;
@@ -18,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,9 +31,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tech.jhipster.security.RandomUtil;
 
-/**
- * Service class for managing users.
- */
 @Service
 @Transactional
 public class UserService {
@@ -42,16 +45,24 @@ public class UserService {
 
     private final CacheManager cacheManager;
 
+    private final EntrepriseRepository entrepriseRepository;
+
+    private final ConversationRepository conversationRepository;
+
     public UserService(
         UserRepository userRepository,
         PasswordEncoder passwordEncoder,
         AuthorityRepository authorityRepository,
-        CacheManager cacheManager
+        CacheManager cacheManager,
+        EntrepriseRepository entrepriseRepository,
+        ConversationRepository conversationRepository
     ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authorityRepository = authorityRepository;
         this.cacheManager = cacheManager;
+        this.entrepriseRepository = entrepriseRepository;
+        this.conversationRepository = conversationRepository;
     }
 
     public Optional<User> activateRegistration(String key) {
@@ -63,6 +74,11 @@ public class UserService {
                 user.setActivated(true);
                 user.setActivationKey(null);
                 this.clearUserCaches(user);
+                if (user.getEntreprise() != null) {
+                    Entreprise entreprise = user.getEntreprise();
+                    entreprise.setStatutEntreprise("ACTIVE");
+                    entrepriseRepository.save(entreprise);
+                }
                 LOG.debug("Activated user: {}", user);
                 return user;
             });
@@ -95,6 +111,10 @@ public class UserService {
     }
 
     public User registerUser(RegistrationRequest registrationRequest) {
+        return registerUser(registrationRequest, null);
+    }
+
+    public User registerUser(RegistrationRequest registrationRequest, String createdBy) {
         userRepository
             .findOneByLogin(registrationRequest.getLogin().toLowerCase())
             .ifPresent(existingUser -> {
@@ -111,6 +131,13 @@ public class UserService {
                     throw new EmailAlreadyUsedException();
                 }
             });
+        Entreprise linkedEntreprise = null;
+        if (registrationRequest.getEntrepriseId() != null) {
+            linkedEntreprise = entrepriseRepository
+                .findById(registrationRequest.getEntrepriseId())
+                .orElseThrow(() -> new IllegalArgumentException("Entreprise not found with id: " + registrationRequest.getEntrepriseId()));
+        }
+
         User newUser = new User();
         String encryptedPassword = passwordEncoder.encode(registrationRequest.getPassword());
         newUser.setLogin(registrationRequest.getLogin().toLowerCase());
@@ -120,14 +147,25 @@ public class UserService {
         if (registrationRequest.getEmail() != null) {
             newUser.setEmail(registrationRequest.getEmail().toLowerCase());
         }
+        newUser.setAddress(registrationRequest.getAddress());
         newUser.setRole(registrationRequest.getRole());
+        newUser.setLangKey(Constants.DEFAULT_LANGUAGE);
         // new user is not active
         newUser.setActivated(false);
         // new user gets registration key
         newUser.setActivationKey(RandomUtil.generateActivationKey());
-        Set<Authority> authorities = new HashSet<>();
-        authorityRepository.findById(AuthoritiesConstants.USER).ifPresent(authorities::add);
+        Set<Authority> authorities = getAuthoritiesForRole(registrationRequest.getRole());
         newUser.setAuthorities(authorities);
+        if (linkedEntreprise != null) {
+            newUser.setEntreprise(linkedEntreprise);
+        }
+        // Set audit fields manually to avoid anonymousUser for public registration
+        if (createdBy != null) {
+            newUser.setCreatedBy(createdBy);
+            newUser.setLastModifiedBy(createdBy);
+            newUser.setCreatedDate(Instant.now());
+            newUser.setLastModifiedDate(Instant.now());
+        }
         userRepository.save(newUser);
         this.clearUserCaches(newUser);
         LOG.debug("Created Information for User: {}", newUser);
@@ -161,6 +199,7 @@ public class UserService {
         if (userDTO.getEmail() != null) {
             newUser.setEmail(userDTO.getEmail().toLowerCase());
         }
+        newUser.setAddress(userDTO.getAddress());
         newUser.setImageUrl(userDTO.getImageUrl());
         newUser.setLangKey(userDTO.getLangKey());
         // new user is not active
@@ -194,17 +233,22 @@ public class UserService {
         if (userDTO.getEmail() != null) {
             user.setEmail(userDTO.getEmail().toLowerCase());
         }
+        user.setAddress(userDTO.getAddress());
         user.setImageUrl(userDTO.getImageUrl());
         if (userDTO.getLangKey() == null) {
             user.setLangKey(Constants.DEFAULT_LANGUAGE); // default language
         } else {
             user.setLangKey(userDTO.getLangKey());
         }
-        String encryptedPassword = passwordEncoder.encode(RandomUtil.generatePassword());
+        String temporaryPassword = RandomUtil.generatePassword();
+        String encryptedPassword = passwordEncoder.encode(temporaryPassword);
         user.setPassword(encryptedPassword);
         user.setResetKey(RandomUtil.generateResetKey());
         user.setResetDate(Instant.now());
         user.setActivated(true);
+        if (userDTO.getRole() != null) {
+            user.setRole(userDTO.getRole());
+        }
         if (userDTO.getAuthorities() != null) {
             Set<Authority> authorities = userDTO
                 .getAuthorities()
@@ -215,17 +259,22 @@ public class UserService {
                 .collect(Collectors.toSet());
             user.setAuthorities(authorities);
         }
+        if (userDTO.getEntrepriseId() != null) {
+            entrepriseRepository.findById(userDTO.getEntrepriseId()).ifPresent(user::setEntreprise);
+        }
         userRepository.save(user);
         this.clearUserCaches(user);
         LOG.debug("Created Information for User: {}", user);
+        // Store temporary password in user object for email sending
+        user.setTemporaryPassword(temporaryPassword);
         return user;
     }
 
     /**
      * Update all information for a specific user, and return the modified user.
      *
-     * @param userDTO user to update.
-     * @return updated user.
+     * @param userDTO
+     * @return
      */
     public Optional<AdminUserDTO> updateUser(AdminUserDTO userDTO) {
         return Optional.of(userRepository.findById(userDTO.getId()))
@@ -239,6 +288,7 @@ public class UserService {
                 if (userDTO.getEmail() != null) {
                     user.setEmail(userDTO.getEmail().toLowerCase());
                 }
+                user.setAddress(userDTO.getAddress());
                 user.setImageUrl(userDTO.getImageUrl());
                 user.setActivated(userDTO.isActivated());
                 user.setLangKey(userDTO.getLangKey());
@@ -263,6 +313,12 @@ public class UserService {
         userRepository
             .findOneByLogin(login)
             .ifPresent(user -> {
+                // Remove user from all conversations to avoid foreign key constraint violation
+                List<Conversation> conversations = conversationRepository.findAllByParticipants_Login(login);
+                for (Conversation conversation : conversations) {
+                    conversation.getParticipants().remove(user);
+                    conversationRepository.save(conversation);
+                }
                 userRepository.delete(user);
                 this.clearUserCaches(user);
                 LOG.debug("Deleted User: {}", user);
@@ -270,13 +326,13 @@ public class UserService {
     }
 
     /**
-     * Update basic information (first name, last name, email, language) for the current user.
+     * Update basic information
      *
-     * @param firstName first name of user.
-     * @param lastName  last name of user.
-     * @param email     email id of user.
-     * @param langKey   language key.
-     * @param imageUrl  image URL of user.
+     * @param firstName
+     * @param lastName
+     * @param email
+     * @param langKey
+     * @param imageUrl
      */
     public void updateUser(String firstName, String lastName, String email, String langKey, String imageUrl) {
         SecurityUtils.getCurrentUserLogin()
@@ -313,12 +369,106 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public Page<AdminUserDTO> getAllManagedUsers(Pageable pageable) {
-        return userRepository.findAll(pageable).map(AdminUserDTO::new);
+        User currentUser = SecurityUtils.getCurrentUserLogin().flatMap(userRepository::findOneWithAuthoritiesByLogin).orElse(null);
+
+        if (currentUser == null) {
+            return new PageImpl<>(Collections.emptyList(), pageable, 0);
+        }
+
+        if (currentUser.getRole() == Role.SUPER_ADMIN) {
+            return userRepository.findAll(pageable).map(AdminUserDTO::new);
+        }
+
+        if (currentUser.getRole() == Role.ADMIN) {
+            if (currentUser.getEntreprise() == null) {
+                return new PageImpl<>(Collections.emptyList(), pageable, 0);
+            }
+            return userRepository.findAllByEntrepriseId(currentUser.getEntreprise().getId(), pageable).map(AdminUserDTO::new);
+        }
+
+        if (currentUser.getRole() == Role.CONSEILLER) {
+            if (currentUser.getEntreprise() == null) {
+                return new PageImpl<>(Collections.emptyList(), pageable, 0);
+            }
+
+            // Get admins from the same entreprise
+            Page<User> admins = userRepository.findAdminsByEntrepriseId(currentUser.getEntreprise().getId(), Role.ADMIN, pageable);
+
+            // Get clients assigned to this conseiller
+            Page<User> assignedClients = userRepository.findClientsAssignedToConseiller(currentUser.getId(), pageable);
+
+            // Combine both lists
+            List<AdminUserDTO> combinedList = new java.util.ArrayList<>();
+            combinedList.addAll(admins.getContent().stream().map(AdminUserDTO::new).collect(Collectors.toList()));
+            combinedList.addAll(assignedClients.getContent().stream().map(AdminUserDTO::new).collect(Collectors.toList()));
+
+            // Remove duplicates based on user ID
+            List<AdminUserDTO> uniqueUsers = combinedList
+                .stream()
+                .collect(Collectors.toMap(AdminUserDTO::getId, user -> user, (existing, replacement) -> existing))
+                .values()
+                .stream()
+                .collect(Collectors.toList());
+
+            return new PageImpl<>(uniqueUsers, pageable, uniqueUsers.size());
+        }
+
+        return new PageImpl<>(Collections.emptyList(), pageable, 0);
     }
 
     @Transactional(readOnly = true)
     public Page<UserDTO> getAllPublicUsers(Pageable pageable) {
-        return userRepository.findAllByIdNotNullAndActivatedIsTrue(pageable).map(UserDTO::new);
+        LOG.debug("Enter: getAllPublicUsers() with argument[s] = [{}]", pageable);
+
+        // Get current user
+        Optional<User> currentUserOpt = getUserWithAuthorities();
+
+        if (currentUserOpt.isPresent()) {
+            User currentUser = currentUserOpt.get();
+
+            // If user is ADMIN, filter by entreprise_id
+            if (currentUser.getRole() == Role.ADMIN && currentUser.getEntreprise() != null) {
+                LOG.debug("Filtering users by entreprise_id: {}", currentUser.getEntreprise().getId());
+                Page<UserDTO> result = userRepository
+                    .findAllByEntrepriseId(currentUser.getEntreprise().getId(), pageable)
+                    .map(UserDTO::new);
+                LOG.debug("Exit: getAllPublicUsers() with result = {}", result);
+                return result;
+            }
+
+            // If user is CONSEILLER, show only admins from their entreprise and assigned clients
+            if (currentUser.getRole() == Role.CONSEILLER && currentUser.getEntreprise() != null) {
+                LOG.debug("Filtering users for CONSEILLER: {}", currentUser.getLogin());
+
+                // Get admins from the same entreprise
+                Page<User> admins = userRepository.findAdminsByEntrepriseId(currentUser.getEntreprise().getId(), Role.ADMIN, pageable);
+
+                // Get clients assigned to this conseiller
+                Page<User> assignedClients = userRepository.findClientsAssignedToConseiller(currentUser.getId(), pageable);
+
+                // Combine both lists
+                List<UserDTO> combinedList = new java.util.ArrayList<>();
+                combinedList.addAll(admins.getContent().stream().map(UserDTO::new).collect(Collectors.toList()));
+                combinedList.addAll(assignedClients.getContent().stream().map(UserDTO::new).collect(Collectors.toList()));
+
+                // Remove duplicates based on user ID
+                List<UserDTO> uniqueUsers = combinedList
+                    .stream()
+                    .collect(Collectors.toMap(UserDTO::getId, user -> user, (existing, replacement) -> existing))
+                    .values()
+                    .stream()
+                    .collect(Collectors.toList());
+
+                Page<UserDTO> result = new PageImpl<>(uniqueUsers, pageable, uniqueUsers.size());
+                LOG.debug("Exit: getAllPublicUsers() with result = {}", result);
+                return result;
+            }
+        }
+
+        // For SUPERADMIN, CLIENT or unauthenticated users, return all active users
+        Page<UserDTO> result = userRepository.findAllByIdNotNullAndActivatedIsTrue(pageable).map(UserDTO::new);
+        LOG.debug("Exit: getAllPublicUsers() with result = {}", result);
+        return result;
     }
 
     @Transactional(readOnly = true)
@@ -331,11 +481,6 @@ public class UserService {
         return SecurityUtils.getCurrentUserLogin().flatMap(userRepository::findOneWithAuthoritiesByLogin);
     }
 
-    /**
-     * Not activated users should be automatically deleted after 3 days.
-     * <p>
-     * This is scheduled to get fired every day, at 01:00 (am).
-     */
     @Scheduled(cron = "0 0 1 * * ?")
     public void removeNotActivatedUsers() {
         userRepository
@@ -349,7 +494,7 @@ public class UserService {
 
     /**
      * Gets a list of all the authorities.
-     * @return a list of all the authorities.
+     * @return
      */
     @Transactional(readOnly = true)
     public List<String> getAuthorities() {
@@ -361,5 +506,30 @@ public class UserService {
         if (user.getEmail() != null) {
             Objects.requireNonNull(cacheManager.getCache(UserRepository.USERS_BY_EMAIL_CACHE)).evictIfPresent(user.getEmail());
         }
+    }
+
+    private Set<Authority> getAuthoritiesForRole(Role role) {
+        Set<Authority> authorities = new HashSet<>();
+        authorityRepository.findById(AuthoritiesConstants.USER).ifPresent(authorities::add);
+
+        switch (role) {
+            case ADMIN:
+                authorityRepository.findById(AuthoritiesConstants.ADMIN).ifPresent(authorities::add);
+                break;
+            case SUPER_ADMIN:
+                authorityRepository.findById(AuthoritiesConstants.ADMIN).ifPresent(authorities::add);
+                authorityRepository.findById(AuthoritiesConstants.SUPER_ADMIN).ifPresent(authorities::add);
+                break;
+            case RESPONSABLE:
+                authorityRepository.findById(AuthoritiesConstants.ADMIN).ifPresent(authorities::add);
+                authorityRepository.findById(AuthoritiesConstants.RESPONSABLE).ifPresent(authorities::add);
+                break;
+            case CLIENT:
+            case CONSEILLER:
+            default:
+                // Only USER authority
+                break;
+        }
+        return authorities;
     }
 }

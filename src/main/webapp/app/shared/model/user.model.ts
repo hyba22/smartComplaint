@@ -7,6 +7,8 @@ export interface IUser {
   activated?: boolean;
   langKey?: string;
   authorities?: any[];
+  role?: string;
+  entrepriseId?: number;
   createdBy?: string;
   createdDate?: Date | null;
   lastModifiedBy?: string;

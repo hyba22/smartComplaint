@@ -1,11 +1,10 @@
 package com.reclamation.chat.domain;
 
-/**
- * Enumeration representing user roles in the system.
- */
 public enum Role {
     CLIENT,
     CONSEILLER,
+    RESPONSABLE,
+    ENTREPRISE,
     ADMIN,
     SUPER_ADMIN,
 }

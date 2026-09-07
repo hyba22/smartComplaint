@@ -2,6 +2,7 @@ package com.reclamation.chat;
 
 import com.reclamation.chat.config.ApplicationProperties;
 import com.reclamation.chat.config.CRLFLogConverter;
+import io.github.cdimascio.dotenv.Dotenv;
 import jakarta.annotation.PostConstruct;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -33,11 +34,10 @@ public class SmartComplaintApp {
     }
 
     /**
-     * Initializes smartComplaint.
+     * Initializes Speed Complaint.
      * <p>
      * Spring profiles can be configured with a program argument --spring.profiles.active=your-active-profile
      * <p>
-     * You can find more information on how profiles work with JHipster on <a href="https://www.jhipster.tech/profiles/">https://www.jhipster.tech/profiles/</a>.
      */
     @PostConstruct
     public void initApplication() {
@@ -63,9 +63,31 @@ public class SmartComplaintApp {
     /**
      * Main method, used to run the application.
      *
-     * @param args the command line arguments.
+     * @param args
      */
     public static void main(String[] args) {
+        // Load .env file if it exists
+        try {
+            Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
+            dotenv
+                .entries()
+                .forEach(entry -> {
+                    String key = entry.getKey();
+                    String value = entry.getValue();
+                    value = value.trim();
+                    if (
+                        value.length() >= 2 &&
+                        ((value.startsWith("\"") && value.endsWith("\"")) || (value.startsWith("'") && value.endsWith("'")))
+                    ) {
+                        value = value.substring(1, value.length() - 1);
+                    }
+                    System.setProperty(key, value);
+                });
+            LOG.info("Loaded environment variables from .env file");
+        } catch (Exception e) {
+            LOG.warn("Could not load .env file: {}", e.getMessage());
+        }
+
         var app = new SpringApplication(SmartComplaintApp.class);
         DefaultProfileUtil.addDefaultProfile(app);
         Environment env = app.run(args).getEnvironment();

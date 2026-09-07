@@ -1,36 +1,30 @@
-import React, { useEffect, useState } from 'react';
-import { Navigate, useLocation, useNavigate } from 'react-router';
+import React, { useEffect } from 'react';
 
-import { useAppDispatch, useAppSelector } from 'app/config/store';
-import { login } from 'app/shared/reducers/authentication';
+import { useAppSelector } from 'app/config/store';
 
-import LoginModal from './login-modal';
+import LoginForm from './login-form';
 
 export const Login = () => {
-  const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(state => state.authentication.isAuthenticated);
-  const loginError = useAppSelector(state => state.authentication.loginError);
-  const showModalLogin = useAppSelector(state => state.authentication.showModalLogin);
-  const [showModal, setShowModal] = useState(showModalLogin);
-  const navigate = useNavigate();
-  const pageLocation = useLocation();
+  const account = useAppSelector(state => state.authentication.account);
 
   useEffect(() => {
-    setShowModal(true);
-  }, []);
+    if (isAuthenticated && account) {
+      // Redirect based on user role using immediate redirect
+      const role = account.role;
+      if (role === 'ADMIN') {
+        window.location.href = '/admin';
+      } else if (role === 'CLIENT') {
+        window.location.href = '/client';
+      } else if (role === 'CONSEILLER') {
+        window.location.href = '/conseiller';
+      } else if (role === 'RESPONSABLE') {
+        window.location.href = '/responsable';
+      }
+    }
+  }, [isAuthenticated, account]);
 
-  const handleLogin = (username, password, rememberMe = false) => dispatch(login(username, password, rememberMe));
-
-  const handleClose = () => {
-    setShowModal(false);
-    navigate('/');
-  };
-
-  const { from } = pageLocation.state || { from: { pathname: '/', search: pageLocation.search } };
-  if (isAuthenticated) {
-    return <Navigate to={from} replace />;
-  }
-  return <LoginModal showModal={showModal} handleLogin={handleLogin} handleClose={handleClose} loginError={loginError} />;
+  return <LoginForm />;
 };
 
 export default Login;

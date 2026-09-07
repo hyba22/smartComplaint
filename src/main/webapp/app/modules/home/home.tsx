@@ -1,85 +1,86 @@
 import './home.scss';
 
-import React from 'react';
-import { Alert, Col, Row } from 'react-bootstrap';
-import { Link } from 'react-router';
-
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import { useAppSelector } from 'app/config/store';
+import { hasAnyAuthority } from 'app/shared/auth/private-route';
+import { Authority } from 'app/shared/jhipster/constants';
+import LanguageToggle from 'app/shared/layout/language/language-toggle';
 
 export const Home = () => {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
   const account = useAppSelector(state => state.authentication.account);
+  const isAuthenticated = useAppSelector(state => state.authentication.isAuthenticated);
+  const isAdmin = hasAnyAuthority(account?.authorities, [Authority.ADMIN]);
+  const isUser = hasAnyAuthority(account?.authorities, [Authority.USER]);
+  const isConseiller = hasAnyAuthority(account?.authorities, [Authority.CONSEILLER]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      if (isAdmin) {
+        navigate('/admin', { replace: true });
+      } else if (isConseiller) {
+        navigate('/conseiller', { replace: true });
+      } else if (isUser) {
+        navigate('/client', { replace: true });
+      }
+    }
+  }, [isAuthenticated, isAdmin, isConseiller, isUser, navigate]);
+
+  const sections = [
+    {
+      titleKey: 'home.serviceListeningTitle',
+      descriptionKey: 'home.serviceListeningDesc',
+      image: '/content/images/undraw_reviews_bmgj.svg',
+      imageAlt: t('home.serviceListeningTitle'),
+    },
+    {
+      titleKey: 'home.trackingTitle',
+      descriptionKey: 'home.trackingDesc',
+      image: '/content/images/undraw_device-sync_d9ei.svg',
+      imageAlt: t('home.trackingTitle'),
+    },
+    {
+      titleKey: 'home.communicationTitle',
+      descriptionKey: 'home.communicationDesc',
+      image: '/content/images/undraw_text-messages_p6bk.svg',
+      imageAlt: t('home.communicationTitle'),
+    },
+    {
+      titleKey: 'home.afterSalesTitle',
+      descriptionKey: 'home.afterSalesDesc',
+      image: '/content/images/undraw_message-sent_iyz6.svg',
+      imageAlt: t('home.afterSalesTitle'),
+    },
+  ];
 
   return (
-    <Row>
-      <Col md="3" className="pad">
-        <span className="hipster rounded" />
-      </Col>
-      <Col md="9">
-        <h1 className="display-4">Bienvenue, Java Hipster !</h1>
-        <p className="lead">Ceci est votre page d&apos;accueil</p>
-        {account?.login ? (
-          <div>
-            <Alert variant="success">Vous êtes connecté en tant que &quot;{account.login}&quot;.</Alert>
-          </div>
-        ) : (
-          <div>
-            <Alert variant="warning">
-              Si vous voulez vous
-              <span>&nbsp;</span>
-              <Link to="/login" className="alert-link">
-                connecter
-              </Link>
-              , vous pouvez utiliser les comptes par défaut : <br /> - Administrateur (nom d&apos;utilisateur=&quot;admin&quot; et mot de
-              passe =&quot;admin&quot;) <br /> - Utilisateur (nom d&apos;utilisateur=&quot;user&quot; et mot de passe =&quot;user&quot;).
-            </Alert>
+    <div className="home-container">
+      <header className="home-hero relative">
+        <div className="absolute top-4 right-4 z-50">
+          <LanguageToggle />
+        </div>
+        <h1>{t('home.heroTitle')}</h1>
+        <p className="home-hero__intro">{t('home.heroIntro')}</p>
+        <p className="home-hero__intro">{t('home.afterSalesIntro')}</p>
+      </header>
 
-            <Alert variant="warning">
-              Vous n&apos;avez pas encore de compte ?&nbsp;
-              <Link to="/account/register" className="alert-link">
-                Créer un compte
-              </Link>
-            </Alert>
-          </div>
-        )}
-        <p>Si vous avez des questions à propos de JHipster :</p>
-
-        <ul>
-          <li>
-            <a href="https://www.jhipster.tech/" target="_blank" rel="noopener noreferrer">
-              Page d&apos;accueil de JHipster
-            </a>
-          </li>
-          <li>
-            <a href="https://stackoverflow.com/tags/jhipster/info" target="_blank" rel="noopener noreferrer">
-              JHipster sur Stack Overflow
-            </a>
-          </li>
-          <li>
-            <a href="https://github.com/jhipster/generator-jhipster/issues?state=open" target="_blank" rel="noopener noreferrer">
-              JHipster bug tracker
-            </a>
-          </li>
-          <li>
-            <a href="https://gitter.im/jhipster/generator-jhipster" target="_blank" rel="noopener noreferrer">
-              JHipster public chat room
-            </a>
-          </li>
-          <li>
-            <a href="https://twitter.com/jhipster" target="_blank" rel="noopener noreferrer">
-              Suivez @jhipster sur Twitter
-            </a>
-          </li>
-        </ul>
-
-        <p>
-          Si vous aimez JHipster, donnez-nous une étoile sur{' '}
-          <a href="https://github.com/jhipster/generator-jhipster" target="_blank" rel="noopener noreferrer">
-            GitHub
-          </a>
-          !
-        </p>
-      </Col>
-    </Row>
+      <div className="home-sections">
+        {sections.map((section, index) => (
+          <section key={section.titleKey} className={`home-section ${index % 2 === 1 ? 'home-section--reverse' : ''}`}>
+            <div className="home-section__text">
+              <h2>{t(section.titleKey)}</h2>
+              <p>{t(section.descriptionKey)}</p>
+            </div>
+            <div className="home-section__image">
+              <img src={section.image} alt={section.imageAlt} />
+            </div>
+          </section>
+        ))}
+      </div>
+    </div>
   );
 };
 

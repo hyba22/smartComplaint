@@ -2,28 +2,26 @@ import React from 'react';
 import { NavItem, NavLink, NavbarBrand } from 'react-bootstrap';
 import { NavLink as Link } from 'react-router';
 
-import { faHome } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
 export const BrandIcon = props => (
   <div {...props} className="brand-icon">
-    <img src="content/images/logo-jhipster.png" alt="Logo" />
+    <img src="content/images/logospeedcomplaint.png" alt="Speed Complaint" />
   </div>
 );
 
 export const Brand = () => (
   <NavbarBrand as={Link as any} to="/" className="brand-logo">
     <BrandIcon />
-    <span className="brand-title">SmartComplaint</span>
-    <span className="navbar-version">{VERSION.toLowerCase().startsWith('v') ? VERSION : `v${VERSION}`}</span>
+    <span className="brand-title">Speed Complaint</span>
   </NavbarBrand>
 );
 
 export const Home = () => (
   <NavItem>
-    <NavLink as={Link as any} to="/" className="d-flex align-items-center">
-      <FontAwesomeIcon icon={faHome} />
-      <span>Accueil</span>
+    <NavLink as={Link as any} to="/login" className="d-flex align-items-center">
+      <span></span>
+    </NavLink>
+    <NavLink as={Link as any} to="/register" className="d-flex align-items-center">
+      <span></span>
     </NavLink>
   </NavItem>
 );

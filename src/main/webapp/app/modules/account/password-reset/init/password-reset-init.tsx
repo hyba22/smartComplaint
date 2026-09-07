@@ -30,7 +30,7 @@ export const PasswordResetInit = () => {
   }, [successMessage]);
 
   return (
-    <div>
+    <div className="mt-5">
       <Row className="justify-content-center">
         <Col md="8">
           <h1>Réinitialiser son mot de passe</h1>

@@ -1,6 +1,7 @@
 package com.reclamation.chat.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.reclamation.chat.config.Constants;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -18,9 +19,6 @@ import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
-/**
- * A user.
- */
 @Entity
 @Table(name = "jhi_user")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
@@ -60,6 +58,10 @@ public class User extends AbstractAuditingEntity<Long> implements Serializable {
     @Column(name = "email", length = 254, unique = true)
     private String email;
 
+    @Size(max = 255)
+    @Column(name = "address", length = 255)
+    private String address;
+
     @NotNull
     @Column(name = "activated", nullable = false)
     private boolean activated = false;
@@ -90,6 +92,11 @@ public class User extends AbstractAuditingEntity<Long> implements Serializable {
     @Column(name = "role", nullable = false)
     private Role role = Role.CLIENT;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "entreprise_id")
+    @JsonIgnoreProperties(value = { "createdBy", "createdDate", "lastModifiedBy", "lastModifiedDate" }, allowSetters = true)
+    private Entreprise entreprise;
+
     @JsonIgnore
     @ManyToMany
     @JoinTable(
@@ -100,6 +107,9 @@ public class User extends AbstractAuditingEntity<Long> implements Serializable {
     @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     @BatchSize(size = 20)
     private Set<Authority> authorities = new HashSet<>();
+
+    @Transient
+    private String temporaryPassword;
 
     public Long getId() {
         return id;
@@ -113,7 +123,6 @@ public class User extends AbstractAuditingEntity<Long> implements Serializable {
         return login;
     }
 
-    // Lowercase the login before saving it in database
     public void setLogin(String login) {
         this.login = StringUtils.lowerCase(login, Locale.ENGLISH);
     }
@@ -148,6 +157,14 @@ public class User extends AbstractAuditingEntity<Long> implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public String getImageUrl() {
@@ -214,6 +231,22 @@ public class User extends AbstractAuditingEntity<Long> implements Serializable {
         this.role = role;
     }
 
+    public Entreprise getEntreprise() {
+        return entreprise;
+    }
+
+    public void setEntreprise(Entreprise entreprise) {
+        this.entreprise = entreprise;
+    }
+
+    public String getTemporaryPassword() {
+        return temporaryPassword;
+    }
+
+    public void setTemporaryPassword(String temporaryPassword) {
+        this.temporaryPassword = temporaryPassword;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -227,23 +260,40 @@ public class User extends AbstractAuditingEntity<Long> implements Serializable {
 
     @Override
     public int hashCode() {
-        // see https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
         return getClass().hashCode();
     }
 
-    // prettier-ignore
     @Override
     public String toString() {
-        return "User{" +
-            "login='" + login + '\'' +
-            ", firstName='" + firstName + '\'' +
-            ", lastName='" + lastName + '\'' +
-            ", email='" + email + '\'' +
-            ", imageUrl='" + imageUrl + '\'' +
-            ", activated='" + activated + '\'' +
-            ", langKey='" + langKey + '\'' +
-            ", activationKey='" + activationKey + '\'' +
-            ", role=" + role +
-            "}";
+        return (
+            "User{" +
+            "login='" +
+            login +
+            '\'' +
+            ", firstName='" +
+            firstName +
+            '\'' +
+            ", lastName='" +
+            lastName +
+            '\'' +
+            ", email='" +
+            email +
+            '\'' +
+            ", imageUrl='" +
+            imageUrl +
+            '\'' +
+            ", activated='" +
+            activated +
+            '\'' +
+            ", langKey='" +
+            langKey +
+            '\'' +
+            ", activationKey='" +
+            activationKey +
+            '\'' +
+            ", role=" +
+            role +
+            "}"
+        );
     }
 }

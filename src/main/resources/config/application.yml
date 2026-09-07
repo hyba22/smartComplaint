@@ -2,7 +2,7 @@
 # Spring Boot configuration.
 #
 # This configuration will be overridden by the Spring profile you use,
-# for example application-dev.yml if you use the "dev" profile.
+# for example application-dev.yml if we use the "dev" profile.
 #
 # More information on profiles: https://www.jhipster.tech/profiles/
 # More information on configuration properties: https://www.jhipster.tech/common-application-properties/
@@ -92,12 +92,12 @@ management:
 
 spring:
   application:
-    name: smartComplaint
+    name: speedComplaint
   docker:
     compose:
-      enabled: true
-      lifecycle-management: start-only
-      file: src/main/docker/services.yml
+      enabled: false
+    lifecycle-management: start-only
+    file: src/main/docker/services.yml
   profiles:
     # The commented value for `active` can be replaced with valid Spring profiles to load.
     # Otherwise, it will be filled in by maven when building the JAR file
@@ -137,6 +137,10 @@ spring:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
         implicit-strategy: org.springframework.boot.hibernate.SpringImplicitNamingStrategy
+  liquibase:
+    change-log: classpath:config/liquibase/master.xml
+    contexts: dev
+    enabled: true
   messages:
     basename: i18n/messages
   main:
@@ -168,6 +172,7 @@ spring:
       console-available: true
 
 server:
+  port: 8282
   servlet:
     session:
       cookie:
@@ -189,7 +194,7 @@ info:
 
 jhipster:
   clientApp:
-    name: 'smartComplaintApp'
+    name: 'speedComplaintApp'
   # By default CORS is disabled. Uncomment to enable.
   # cors:
   #   allowed-origins: "http://localhost:8100,http://localhost:9000"
@@ -199,12 +204,12 @@ jhipster:
   #   allow-credentials: true
   #   max-age: 1800
   mail:
-    from: smartComplaint@localhost
+    from: speedComplaint@localhost
   api-docs:
     default-include-pattern: /api/**
     management-include-pattern: /management/**
-    title: Smart Complaint API
-    description: Smart Complaint API documentation
+    title: Speed Complaint API
+    description: Speed Complaint API documentation
     version: 0.0.1
     terms-of-service-url:
     contact-name:
@@ -220,7 +225,7 @@ jhipster:
 ---
 # ===================================================================
 # Application specific properties
-# Add your own application properties here, see the ApplicationProperties class
+# Add the application properties here, see the ApplicationProperties class
 # to have type-safe configuration, like in the JHipsterProperties above
 #
 # More documentation is available at:
@@ -228,3 +233,14 @@ jhipster:
 # ===================================================================
 
 # application:
+
+app:
+  upload:
+    dir: uploads
+  storage:
+    provider: ${STORAGE_PROVIDER:local}
+
+cloudinary:
+  cloud-name: ${CLOUDINARY_CLOUD_NAME:}
+  api-key: ${CLOUDINARY_API_KEY:}
+  api-secret: ${CLOUDINARY_API_SECRET:}

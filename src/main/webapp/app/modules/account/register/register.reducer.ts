@@ -3,7 +3,13 @@ import axios from 'axios';
 
 import { serializeAxiosError } from 'app/shared/reducers/reducer.utils';
 
-const initialState = {
+const initialState: {
+  loading: boolean;
+  registrationSuccess: boolean;
+  registrationFailure: boolean;
+  errorMessage: string | null;
+  successMessage: string | null;
+} = {
   loading: false,
   registrationSuccess: false,
   registrationFailure: false,
@@ -15,9 +21,44 @@ export type RegisterState = Readonly<typeof initialState>;
 
 // Actions
 
+export type RegisterPayload = {
+  login: string;
+  email: string;
+  password: string;
+  firstName?: string;
+  lastName?: string;
+  address?: string;
+  role: 'CLIENT' | 'ENTREPRISE' | 'ADMIN';
+  langKey?: string;
+};
+
+export type EntrepriseRegisterPayload = {
+  idEntreprise: string;
+  nomEntreprise: string;
+  secteur?: string;
+  adresseEntreprise: string;
+  tel?: string;
+  emailEntreprise?: string;
+  adminFirstName: string;
+  adminLastName: string;
+  adminEmail: string;
+  adminPassword: string;
+  adminLogin?: string;
+};
+
 export const handleRegister = createAsyncThunk(
   'register/create_account',
-  async (data: { login: string; email: string; password: string; langKey?: string }) => axios.post<any>('api/register', data),
+  async (data: RegisterPayload) => {
+    return axios.post<any>('api/signup', data);
+  },
+  { serializeError: serializeAxiosError },
+);
+
+export const handleEntrepriseRegister = createAsyncThunk(
+  'register/create_entreprise_account',
+  async (data: EntrepriseRegisterPayload) => {
+    return axios.post<any>('api/signup/entreprise', data);
+  },
   { serializeError: serializeAxiosError },
 );
 
@@ -37,12 +78,25 @@ export const RegisterSlice = createSlice({
       .addCase(handleRegister.rejected, (state, action) => ({
         ...initialState,
         registrationFailure: true,
-        errorMessage: action.error.message,
+        errorMessage: action.error.message ?? null,
       }))
       .addCase(handleRegister.fulfilled, () => ({
         ...initialState,
         registrationSuccess: true,
-        successMessage: 'Registration saved! Please check your email for confirmation.',
+        successMessage: 'Inscription enregistrée ! Merci de vérifier votre email pour activer votre compte.',
+      }))
+      .addCase(handleEntrepriseRegister.pending, state => {
+        state.loading = true;
+      })
+      .addCase(handleEntrepriseRegister.rejected, (state, action) => ({
+        ...initialState,
+        registrationFailure: true,
+        errorMessage: action.error.message ?? null,
+      }))
+      .addCase(handleEntrepriseRegister.fulfilled, () => ({
+        ...initialState,
+        registrationSuccess: true,
+        successMessage: "Inscription entreprise enregistrée ! Merci de vérifier l'email administrateur pour activer le compte.",
       }));
   },
 });

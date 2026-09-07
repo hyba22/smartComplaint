@@ -1,51 +1,49 @@
 import './header.scss';
 
 import React from 'react';
-import { Nav, Navbar } from 'react-bootstrap';
+import { Button, Navbar } from 'react-bootstrap';
+import { Link } from 'react-router';
+import { useTranslation } from 'react-i18next';
 
 import LoadingBar from 'react-redux-loading-bar';
 
-import { AccountMenu, AdminMenu, EntitiesMenu } from '../menus';
+import { Brand } from './header-components';
 
-import { Brand, Home } from './header-components';
+type HeaderProps = {
+  isAuthenticated?: boolean;
+  isAdmin?: boolean;
+  ribbonEnv?: string;
+  isInProduction?: boolean;
+  isOpenAPIEnabled?: boolean;
+};
 
-export interface IHeaderProps {
-  isAuthenticated: boolean;
-  isAdmin: boolean;
-  ribbonEnv: string;
-  isInProduction: boolean;
-  isOpenAPIEnabled: boolean;
-}
-
-const Header = (props: IHeaderProps) => {
-  const renderDevRibbon = () =>
-    !props.isInProduction && (
-      <div className="ribbon dev">
-        <a href="">Development</a>
-      </div>
-    );
-
-  /* jhipster-needle-add-element-to-menu - JHipster will add new menu items here */
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const Header = (_?: HeaderProps) => {
+  const { t } = useTranslation();
   return (
-    <div id="app-header">
-      {renderDevRibbon()}
+    <header id="app-header" className="sc-header">
       <LoadingBar className="loading-bar" />
-      <Navbar data-cy="navbar" data-bs-theme="dark" expand="md" fixed="top" className="jh-navbar" collapseOnSelect>
-        <Navbar.Toggle aria-controls="header-tabs" aria-label="Menu" />
-        <Brand />
-        <Navbar.Collapse id="header-tabs">
-          <Nav className="ms-auto">
-            <Home />
-            {props.isAuthenticated && <EntitiesMenu />}
-            {props.isAuthenticated && props.isAdmin && (
-              <AdminMenu showOpenAPI={props.isOpenAPIEnabled} showDatabase={!props.isInProduction} />
-            )}
-            <AccountMenu isAuthenticated={props.isAuthenticated} />
-          </Nav>
-        </Navbar.Collapse>
-      </Navbar>
-    </div>
+      <div className="sc-nav-shell">
+        <Navbar data-cy="navbar" data-bs-theme="dark" expand="md" fixed="top" className="jh-navbar glass-nav" collapseOnSelect>
+          <div className="d-flex w-100 align-items-center justify-content-between gap-3">
+            <div className="d-flex align-items-center gap-3">
+              <Brand />
+            </div>
+            <Navbar.Toggle aria-controls="header-tabs" aria-label="Menu" className="sc-navbar-toggle" />
+          </div>
+          <Navbar.Collapse id="header-tabs">
+            <div className="d-flex flex-column flex-md-row align-items-center gap-3 ms-auto mt-3 mt-md-0" data-cy="header-actions">
+              <Button as={Link as any} to="/login" variant="outline-light" size="sm" className="sc-outline-btn w-100 w-md-auto">
+                {t('header.login')}
+              </Button>
+              <Button as={Link as any} to="/account/register" variant="primary" size="sm" className="sc-solid-btn w-100 w-md-auto">
+                {t('header.register')}
+              </Button>
+            </div>
+          </Navbar.Collapse>
+        </Navbar>
+      </div>
+    </header>
   );
 };
 

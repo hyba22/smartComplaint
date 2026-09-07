@@ -1,0 +1,130 @@
+$panel-bg: rgba(255, 255, 255, 0.92);
+$panel-border: rgba(255, 255, 255, 0.5);
+$panel-shadow: rgba(20, 51, 98, 0.12);
+$primary-color: #143362;
+$accent-color: #1ba784;
+$text-muted: #5f6b7c;
+
+.register-form-page {
+  &__title {
+    font-size: clamp(2rem, 4vw, 2.8rem);
+    font-weight: 600;
+    color: $primary-color;
+  }
+
+  &__subtitle {
+    max-width: 580px;
+    margin: 0 auto;
+    color: $text-muted;
+    font-size: 1.05rem;
+    line-height: 1.7;
+  }
+
+  .col-md-8.col-lg-7.col-xl-6 {
+    flex: 0 0 80%;
+    max-width: 80%;
+  }
+}
+
+.register-panel {
+  position: relative;
+  padding: clamp(2rem, 4vw, 2.75rem);
+  border-radius: 32px;
+  background: $panel-bg;
+  backdrop-filter: blur(14px);
+  border: 1px solid $panel-border;
+  box-shadow: 0 30px 60px $panel-shadow;
+}
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  .form-label {
+    font-weight: 600;
+    color: $primary-color;
+  }
+
+  .form-control,
+  .form-select {
+    border-radius: 16px;
+    border: 1px solid rgba(20, 51, 98, 0.15);
+    padding: 0.8rem 1rem;
+    font-size: 1rem;
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
+
+    &:focus {
+      border-color: rgba(27, 167, 132, 0.65);
+      box-shadow: 0 0 0 0.25rem rgba(27, 167, 132, 0.15);
+    }
+  }
+
+  .invalid-feedback {
+    margin-top: 0.5rem;
+  }
+
+  .form-check-input {
+    border-radius: 8px;
+  }
+
+  .form-check-label {
+    color: $text-muted;
+  }
+}
+
+.register-form__cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+
+  #register-submit,
+  button[data-cy='submitEntreprise'] {
+    min-width: 200px;
+    border-radius: 999px;
+    padding: 0.75rem 1.75rem;
+    font-weight: 600;
+    background: linear-gradient(135deg, #407fe0, #3ab079);
+    border: none;
+  }
+}
+
+.register-form__secondary {
+  color: $primary-color;
+  font-weight: 600;
+  text-decoration: none;
+
+  &:hover {
+    color: darken($primary-color, 5%);
+    text-decoration: underline;
+  }
+}
+
+.register-form__info {
+  margin-top: 2rem;
+  border-radius: 18px;
+  background: rgba(27, 167, 132, 0.08);
+  border: none;
+  color: $primary-color;
+}
+
+.register-form__feedback {
+  border-radius: 14px;
+  border: none;
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .register-panel {
+    padding: 1.75rem;
+  }
+
+  .register-form__cta {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

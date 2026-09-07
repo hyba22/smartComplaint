@@ -2,6 +2,7 @@
   "compilerOptions": {
     "jsx": "react",
     "target": "es2021",
+    "ignoreDeprecations": "6.0",
     "module": "esnext",
     "moduleResolution": "bundler",
     "sourceMap": true,
@@ -9,6 +10,7 @@
     "experimentalDecorators": true,
     "removeComments": false,
     "noImplicitAny": false,
+    "rootDir": "src/main/webapp/app",
     "outDir": "target/classes/static/app",
     "lib": ["dom", "es2015", "es2016", "es2017", "es2019", "es2020", "es2021"],
     "types": ["webpack-env"],

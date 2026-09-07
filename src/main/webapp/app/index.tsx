@@ -4,6 +4,7 @@ import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
+import 'app/tailwind.css';
 import AppComponent from 'app/app';
 import setupAxiosInterceptors from 'app/config/axios-interceptor';
 import { loadIcons } from 'app/config/icon-loader';
@@ -19,6 +20,9 @@ setupAxiosInterceptors(() => actions.clearAuthentication('login.error.unauthoriz
 loadIcons();
 
 const rootEl = document.getElementById('root');
+if (!rootEl) {
+  throw new Error("Root element not found. Make sure there is a <div id='root'></div> in index.html.");
+}
 const root = createRoot(rootEl);
 
 const render = Component =>

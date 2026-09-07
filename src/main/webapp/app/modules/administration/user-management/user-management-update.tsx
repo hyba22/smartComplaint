@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button, Col, FormText, Row } from 'react-bootstrap';
 import { ValidatedField, ValidatedForm, isEmail } from 'react-jhipster';
 import { Link, useNavigate, useParams } from 'react-router';
@@ -11,6 +12,7 @@ import { useAppDispatch, useAppSelector } from 'app/config/store';
 import { createUser, getRoles, getUser, reset, updateUser } from './user-management.reducer';
 
 export const UserManagementUpdate = () => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
 
   const navigate = useNavigate();
@@ -52,13 +54,13 @@ export const UserManagementUpdate = () => {
     <div>
       <Row className="justify-content-center">
         <Col md="8">
-          <h1 data-cy="UserManagementCreateUpdateHeading">Créer ou éditer un utilisateur</h1>
+          <h1 data-cy="UserManagementCreateUpdateHeading">{isNew ? t('users.addUser') : t('users.editUser')}</h1>
         </Col>
       </Row>
       <Row className="justify-content-center">
         <Col md="8">
           {loading ? (
-            <p>Loading...</p>
+            <p>{t('common.loading')}</p>
           ) : (
             <ValidatedForm onSubmit={saveUser} defaultValues={user}>
               {user.id && <ValidatedField type="text" name="id" data-cy="id" required readOnly label="ID" validate={{ required: true }} />}
@@ -66,23 +68,23 @@ export const UserManagementUpdate = () => {
                 type="text"
                 name="login"
                 data-cy="login"
-                label="Login"
+                label={t('users.login')}
                 validate={{
                   required: {
                     value: true,
-                    message: "Votre nom d'utilisateur est obligatoire.",
+                    message: t('common.fieldRequired'),
                   },
                   pattern: {
-                    value: /^[a-zA-Z0-9!$&*+=?^_`{|}~.-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$|^[_.@A-Za-z0-9-]+$/,
-                    message: "Votre nom d'utilisateur est invalide.",
+                    value: /^[a-zA-Z0-9!$&*+=?^_`{|}~.-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$|^[_.@A-Za-z0-9-]+$/,
+                    message: t('common.invalidLogin'),
                   },
                   minLength: {
                     value: 1,
-                    message: "Votre nom d'utilisateur doit contenir au moins un caractère.",
+                    message: t('common.minLength', { min: 1 }),
                   },
                   maxLength: {
                     value: 50,
-                    message: "Votre nom d'utilisateur ne peut pas contenir plus de 50 caractères.",
+                    message: t('common.maxLength', { max: 50 }),
                   },
                 }}
               />
@@ -90,11 +92,11 @@ export const UserManagementUpdate = () => {
                 type="text"
                 name="firstName"
                 data-cy="firstName"
-                label="Prénom"
+                label={t('users.firstName')}
                 validate={{
                   maxLength: {
                     value: 50,
-                    message: 'Ce champ doit faire au maximum 50 caractères.',
+                    message: t('common.maxLength', { max: 50 }),
                   },
                 }}
               />
@@ -102,39 +104,47 @@ export const UserManagementUpdate = () => {
                 type="text"
                 name="lastName"
                 data-cy="lastName"
-                label="Nom"
+                label={t('users.lastName')}
                 validate={{
                   maxLength: {
                     value: 50,
-                    message: 'Ce champ doit faire au maximum 50 caractères.',
+                    message: t('common.maxLength', { max: 50 }),
                   },
                 }}
               />
-              <FormText>This field cannot be longer than 50 characters.</FormText>
+              <FormText>{t('common.maxLength', { max: 50 })}</FormText>
               <ValidatedField
                 name="email"
                 data-cy="email"
-                label="Email"
-                placeholder="Votre email"
+                label={t('users.email')}
+                placeholder={t('users.enterEmail')}
                 type="email"
                 validate={{
                   required: {
                     value: true,
-                    message: 'Votre email est requis.',
+                    message: t('common.fieldRequired'),
                   },
                   minLength: {
                     value: 5,
-                    message: 'Votre email doit comporter au moins 5 caractères.',
+                    message: t('common.minLength', { min: 5 }),
                   },
                   maxLength: {
                     value: 254,
-                    message: 'Votre email ne doit pas comporter plus de 50 caractères.',
+                    message: t('common.maxLength', { max: 254 }),
                   },
-                  validate: v => isEmail(v) || "Votre email n'est pas valide.",
+                  validate: v => isEmail(v) || t('common.invalidEmail'),
                 }}
               />
-              <ValidatedField type="checkbox" name="activated" data-cy="activated" check value={true} disabled={!user.id} label="Activé" />
-              <ValidatedField type="select" name="authorities" data-cy="profiles" multiple label="Droits">
+              <ValidatedField
+                type="checkbox"
+                name="activated"
+                data-cy="activated"
+                check
+                value={true}
+                disabled={!user.id}
+                label={t('users.active')}
+              />
+              <ValidatedField type="select" name="authorities" data-cy="profiles" multiple label={t('users.role')}>
                 {authorities.map(role => (
                   <option value={role} key={role}>
                     {role}
@@ -144,12 +154,12 @@ export const UserManagementUpdate = () => {
               <Button as={Link as any} to="/admin/user-management" replace variant="info" data-cy="entityCreateCancelButton">
                 <FontAwesomeIcon icon={faArrowLeft} />
                 &nbsp;
-                <span className="d-none d-md-inline">Retour</span>
+                <span className="d-none d-md-inline">{t('common.back')}</span>
               </Button>
               &nbsp;
               <Button variant="primary" type="submit" disabled={updating} data-cy="entityCreateSaveButton">
                 <FontAwesomeIcon icon={faSave} />
-                &nbsp; Sauvegarder
+                &nbsp; {t('common.save')}
               </Button>
             </ValidatedForm>
           )}

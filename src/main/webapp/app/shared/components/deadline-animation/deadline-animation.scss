@@ -1,0 +1,114 @@
+$deadline-red: #ff0a3b;
+$deadline-dark: #1a1a2e;
+$deadline-track: #e2e4e9;
+
+.deadline-animation {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 16px;
+  min-height: 400px;
+  width: 100%;
+  max-width: 800px;
+  text-align: center;
+  position: relative;
+
+  &__title {
+    font-size: 42px;
+    font-weight: 900;
+    color: $deadline-dark;
+    margin: 0 0 20px;
+    letter-spacing: 6px;
+    font-family: 'Arial Black', sans-serif;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  &__stage {
+    position: relative;
+    margin: 0 auto;
+    max-width: 800px;
+  }
+
+  &__canvas {
+    display: block;
+    width: 100%;
+    height: auto;
+    background: transparent;
+  }
+
+  &__grim {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    height: 90px;
+    width: auto;
+    transition: left 0.5s ease-in-out;
+    pointer-events: none;
+    object-fit: contain;
+  }
+
+  &__label {
+    font-size: 24px;
+    font-weight: 900;
+    color: $deadline-red;
+    margin-top: 10px;
+    text-shadow: 0 0 20px rgba(255, 10, 59, 0.3);
+    font-family: 'Arial Black', sans-serif;
+  }
+
+  &__message {
+    font-size: 32px;
+    font-weight: 900;
+    color: $deadline-red;
+    text-shadow:
+      0 0 30px rgba(255, 10, 59, 0.4),
+      0 0 60px rgba(255, 10, 59, 0.2);
+    animation: flash 0.5s ease-in-out infinite alternate;
+    margin-top: 10px;
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.8;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes flash {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  100% {
+    opacity: 0.5;
+    transform: scale(1.05);
+  }
+}
+
+@media (max-width: 768px) {
+  .deadline-animation {
+    &__title {
+      font-size: 28px;
+      letter-spacing: 3px;
+    }
+
+    &__grim {
+      height: 60px;
+    }
+
+    &__label {
+      font-size: 18px;
+    }
+
+    &__message {
+      font-size: 24px;
+    }
+  }
+}

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="20260810230000-1" author="system">
+        <comment>Update existing messages to set message_type based on piece_jointe</comment>
+        
+        <!-- Set messageType to 'IMAGE' for messages with image files -->
+        <sql>
+            UPDATE message 
+            SET message_type = 'IMAGE' 
+            WHERE piece_jointe IS NOT NULL 
+              AND piece_jointe LIKE '%images/%'
+              AND message_type = 'TEXT'
+        </sql>
+        
+        <!-- Set messageType to 'VOICE' for messages with voice files -->
+        <sql>
+            UPDATE message 
+            SET message_type = 'VOICE' 
+            WHERE piece_jointe IS NOT NULL 
+              AND piece_jointe LIKE '%voice/%'
+              AND message_type = 'TEXT'
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>
