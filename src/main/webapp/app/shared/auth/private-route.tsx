@@ -48,8 +48,8 @@ const PrivateRoute = ({ children, hasAnyAuthorities = [], ...rest }: IOwnProps) 
   );
 };
 
-export const hasAnyAuthority = (authorities: string[], hasAnyAuthorities: string[], role?: string) => {
-  if (hasAnyAuthorities.length === 0) {
+export const hasAnyAuthority = (authorities: string[] | null | undefined, hasAnyAuthorities?: string[] | null, role?: string) => {
+  if (!hasAnyAuthorities || hasAnyAuthorities.length === 0) {
     return true;
   }
 

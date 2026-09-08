@@ -43,7 +43,7 @@ describe('Creating account tests', () => {
     ).toEqual({
       ...initialState,
       registrationSuccess: true,
-      successMessage: 'Registration saved! Please check your email for confirmation.',
+      successMessage: 'Inscription enregistrée ! Merci de vérifier votre email pour activer votre compte.',
     });
   });
 
@@ -62,7 +62,7 @@ describe('Creating account tests', () => {
   });
 
   describe('Actions', () => {
-    let store;
+    let store: ReturnType<typeof configureStore<any[], any>>;
 
     const resolvedObject = { value: 'whatever' };
     const getState = jest.fn();
@@ -76,7 +76,7 @@ describe('Creating account tests', () => {
     });
 
     it('dispatches CREATE_ACCOUNT_PENDING and CREATE_ACCOUNT_FULFILLED actions', async () => {
-      const arg = { login: '', email: '', password: '' };
+      const arg = { login: '', email: '', password: '', role: 'CLIENT' as const };
 
       const result = await handleRegister(arg)(dispatch, getState, extra);
 
@@ -89,8 +89,8 @@ describe('Creating account tests', () => {
       expect(handleRegister.fulfilled.match(result)).toBe(true);
       expect(result.payload).toBe(resolvedObject);
     });
-    it('dispatches RESET actions', async () => {
-      await store.dispatch(reset());
+    it('dispatches RESET actions', () => {
+      store.dispatch(reset());
       expect(store.getState()).toEqual([expect.any(Object), expect.objectContaining(reset())]);
     });
   });

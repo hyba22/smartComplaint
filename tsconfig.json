@@ -2,7 +2,6 @@
   "compilerOptions": {
     "jsx": "react",
     "target": "es2021",
-    "ignoreDeprecations": "6.0",
     "module": "esnext",
     "moduleResolution": "bundler",
     "sourceMap": true,
@@ -16,14 +15,13 @@
     "types": ["webpack-env"],
     "allowJs": true,
     "checkJs": false,
-    "baseUrl": "./",
     "paths": {
-      "app/*": ["src/main/webapp/app/*"]
+      "app/*": ["./src/main/webapp/app/*"]
     },
     "importHelpers": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true
   },
   "include": ["src/main/webapp/app"],
-  "exclude": ["node_modules", "**/*.spec.ts", "**/*.spec.tsx"]
+  "exclude": ["node_modules"]
 }

@@ -43,7 +43,7 @@ describe('private-route component', () => {
 
   it('Should render an error message when the user has no authorities', () => {
     const { container } = wrapper(
-      <PrivateRoute>
+      <PrivateRoute hasAnyAuthorities={['ADMIN']}>
         <TestComp />
       </PrivateRoute>,
       {
@@ -101,10 +101,13 @@ describe('private-route component', () => {
 
 describe('hasAnyAuthority', () => {
   // All tests will go here
-  it('Should return false when authorities is invalid', () => {
-    expect(hasAnyAuthority(undefined, undefined)).toEqual(false);
-    expect(hasAnyAuthority(null, [])).toEqual(false);
-    expect(hasAnyAuthority([], [])).toEqual(false);
+  it('Should return true when no authorities are required', () => {
+    expect(hasAnyAuthority(undefined, undefined)).toEqual(true);
+    expect(hasAnyAuthority(null, [])).toEqual(true);
+    expect(hasAnyAuthority([], [])).toEqual(true);
+  });
+
+  it('Should return false when required authorities are not met', () => {
     expect(hasAnyAuthority([], [Authority.USER])).toEqual(false);
   });
 
