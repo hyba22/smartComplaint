@@ -91,7 +91,7 @@ pipeline {
             cleanWs()
         }
         failure {
-            echo 'Pipeline failed. Check the console output and test reports above.'
+            echo 'Pipeline failed, Check the console output and test reports above.'
         }
     }
 }

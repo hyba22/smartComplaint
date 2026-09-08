@@ -67,7 +67,7 @@ export const DeadlineAnimation: React.FC<DeadlineAnimationProps> = ({ initialDay
         <canvas ref={canvasRef} width={CANVAS_WIDTH} height={CANVAS_HEIGHT} className="deadline-animation__canvas" />
         <video
           className="deadline-animation__grim"
-          src="/content/videos/grim-reaper.mp4"
+          src="/content/videos/grim-reaper.webm"
           autoPlay
           muted
           loop
