@@ -173,7 +173,7 @@ describe('User management reducer tests', () => {
         ...initialState,
         loading: true,
       };
-      expect(userManagement(initialStateNew, reset)).toEqual(initialState);
+      expect(userManagement(initialStateNew, reset())).toEqual(initialState);
     });
   });
 

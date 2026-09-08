@@ -1,13 +1,9 @@
 import { configureStore } from '@reduxjs/toolkit';
-import * as toastify from 'react-toastify'; // synthetic default import doesn't work here due to mocking.
+import * as toastify from 'react-toastify';
 import sinon from 'sinon';
 
-import {
-  INVALID_PASSWORD_TYPE,
-  MESSAGE_ALERT_HEADER_NAME,
-  MESSAGE_ERROR_HEADER_NAME,
-  MESSAGE_PARAM_HEADER_NAME,
-} from 'app/shared/jhipster/constants';
+import { MESSAGE_ALERT_HEADER_NAME, MESSAGE_ERROR_HEADER_NAME, MESSAGE_PARAM_HEADER_NAME } from 'app/shared/jhipster/constants';
+import { INVALID_PASSWORD_TYPE } from 'app/shared/jhipster/error.constants';
 import { ProblemWithMessageType } from 'app/shared/jhipster/problem-details';
 
 import notificationMiddleware from './notification-middleware';

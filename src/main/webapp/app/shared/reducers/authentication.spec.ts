@@ -188,7 +188,7 @@ describe('Authentication reducer tests', () => {
       const loginResponse = { headers: { authorization: 'auth' } };
       axios.post = sinon.stub().returns(Promise.resolve(loginResponse));
 
-      const result = await authenticate('test', 'test')(dispatch, getState, extra);
+      const result = await authenticate({ username: 'test', password: 'test' })(dispatch, getState, extra);
 
       expect(dispatch).toHaveBeenCalledWith(
         expect.objectContaining({
