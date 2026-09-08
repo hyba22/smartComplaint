@@ -43,8 +43,8 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: test.test04180722@gmail.com
-    password: bclyvmnczjeiotas
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
     properties:
       mail:
         smtp:
@@ -106,7 +106,7 @@ jhipster:
         token-validity-in-seconds: 86400
         token-validity-in-seconds-for-remember-me: 2592000
   mail: # specific JHipster mail property, for standard properties see MailProperties
-    from: test.test04180722@gmail.com
+    from: ${MAIL_FROM:${MAIL_USERNAME:}}
     base-url: http://localhost:9000 # Modify according to the server's URL
   logging:
     use-json-format: false # By default, logs are not in Json format
