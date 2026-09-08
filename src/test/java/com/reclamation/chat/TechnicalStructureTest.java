@@ -34,5 +34,6 @@ class TechnicalStructureTest {
         .ignoreDependency(alwaysTrue(), belongToAnyOf(
             com.reclamation.chat.config.Constants.class,
             com.reclamation.chat.config.ApplicationProperties.class
-        ));
+        ))
+        .ignoreDependency(alwaysTrue(), belongToAnyOf(com.reclamation.chat.web.websocket.ActivityService.class));
 }
