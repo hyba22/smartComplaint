@@ -1,7 +1,7 @@
 # This configuration is intended for development purpose, it's **your** responsibility to harden it for production
 name: smartcomplaint
 services:
-  app:
+  backend:
     image: smartcomplaint
     environment:
       - _JAVA_OPTIONS=-Xmx512m -Xms256m
@@ -12,13 +12,13 @@ services:
       - SPRING_DATASOURCE_PASSWORD=
       - SPRING_LIQUIBASE_URL=jdbc:postgresql://postgresql:5432/smartComplaint
     ports:
-      - 127.0.0.1:8080:8080
+      - 127.0.0.1:8282:8282
     healthcheck:
       test:
         - CMD
         - curl
         - -f
-        - http://localhost:8080/management/health
+        - http://localhost:8282/management/health
       interval: 5s
       timeout: 5s
       retries: 40

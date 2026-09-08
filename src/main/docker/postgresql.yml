@@ -2,7 +2,7 @@
 name: smartcomplaint
 services:
   postgresql:
-    image: postgres:18.3
+    image: postgres:17
     # volumes:
     #   - ~/volumes/jhipster/smartComplaint/postgresql/:/var/lib/postgresql/data/
     environment:
