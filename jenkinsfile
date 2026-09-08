@@ -20,13 +20,16 @@ pipeline {
 
         stage('Build') {
             steps {
-                bat './mvnw.cmd -B -Pprod compile'
+                sh '''
+                    chmod +x mvnw
+                    ./mvnw -B -Pprod compile
+                '''
             }
         }
 
         stage('Unit & Frontend Tests') {
             steps {
-                bat './mvnw.cmd -B -Pprod test'
+                sh './mvnw -B -Pprod test'
             }
             post {
                 always {
@@ -37,7 +40,7 @@ pipeline {
 
         stage('Integration Tests') {
             steps {
-                bat './mvnw.cmd -B -Pprod failsafe:integration-test failsafe:verify'
+                sh './mvnw -B -Pprod failsafe:integration-test failsafe:verify'
             }
             post {
                 always {
@@ -53,12 +56,10 @@ pipeline {
                     usernameVariable: 'DOCKER_USERNAME',
                     passwordVariable: 'DOCKER_PASSWORD'
                 )]) {
-                    bat '''
-                        echo %DOCKER_PASSWORD% > docker_password.txt
-                        docker login --username %DOCKER_USERNAME% --password-stdin < docker_password.txt
-                        del docker_password.txt
+                    sh '''
+                        echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
 
-                        mvnw.cmd -B -Pprod clean jib:build -DskipTests -Djib.image=%DOCKER_USERNAME%/smartcomplaint:%BUILD_NUMBER%
+                        ./mvnw -B -Pprod clean jib:build -DskipTests -Djib.image=$DOCKER_USERNAME/smartcomplaint:$BUILD_NUMBER
                     '''
                 }
             }
@@ -71,15 +72,13 @@ pipeline {
                     usernameVariable: 'DOCKER_USERNAME',
                     passwordVariable: 'DOCKER_PASSWORD'
                 )]) {
-                    bat '''
-                        echo %DOCKER_PASSWORD% > docker_password.txt
-                        docker login --username %DOCKER_USERNAME% --password-stdin < docker_password.txt
-                        del docker_password.txt
+                    sh '''
+                        echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
 
-                        docker build -f src/main/docker/Dockerfile.frontend -t %DOCKER_USERNAME%/smartcomplaint-frontend:%BUILD_NUMBER% .
-                        docker push %DOCKER_USERNAME%/smartcomplaint-frontend:%BUILD_NUMBER%
-                        docker tag %DOCKER_USERNAME%/smartcomplaint-frontend:%BUILD_NUMBER% %DOCKER_USERNAME%/smartcomplaint-frontend:latest
-                        docker push %DOCKER_USERNAME%/smartcomplaint-frontend:latest
+                        docker build -f src/main/docker/Dockerfile.frontend -t $DOCKER_USERNAME/smartcomplaint-frontend:$BUILD_NUMBER .
+                        docker push $DOCKER_USERNAME/smartcomplaint-frontend:$BUILD_NUMBER
+                        docker tag $DOCKER_USERNAME/smartcomplaint-frontend:$BUILD_NUMBER $DOCKER_USERNAME/smartcomplaint-frontend:latest
+                        docker push $DOCKER_USERNAME/smartcomplaint-frontend:latest
                     '''
                 }
             }
