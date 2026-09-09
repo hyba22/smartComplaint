@@ -15,6 +15,10 @@ spring:
       - org.springframework.boot.mail.autoconfigure.MailHealthContributorAutoConfiguration
   messages:
     basename: i18n/messages
+  mail:
+    host: localhost
+    port: 2525
+    test-connection: false
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     hikari:
