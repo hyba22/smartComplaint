@@ -20,7 +20,8 @@ import org.springframework.boot.test.context.SpringBootTest;
         JacksonConfiguration.class,
         AsyncSyncConfiguration.class,
         com.reclamation.chat.config.JacksonHibernateConfiguration.class,
-    }
+    },
+    properties = "spring.profiles.active=testprod"
 )
 @EmbeddedSQL
 public @interface IntegrationTest {}

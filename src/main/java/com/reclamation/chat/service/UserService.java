@@ -424,7 +424,7 @@ public class UserService {
         Optional<User> currentUserOpt = getUserWithAuthorities();
 
         if (currentUserOpt.isPresent()) {
-            User currentUser = currentUserOpt.get();
+            User currentUser = currentUserOpt.orElseThrow();
 
             // If user is ADMIN, filter by entreprise_id
             if (currentUser.getRole() == Role.ADMIN && currentUser.getEntreprise() != null) {

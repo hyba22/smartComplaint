@@ -7,6 +7,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.reclamation.chat.IntegrationTest;
+import com.reclamation.chat.domain.Entreprise;
+import com.reclamation.chat.domain.Role;
 import com.reclamation.chat.domain.User;
 import com.reclamation.chat.repository.UserRepository;
 import com.reclamation.chat.security.AuthoritiesConstants;
@@ -250,8 +252,17 @@ class UserResourceIT {
 
     @Test
     @Transactional
+    @WithMockUser(username = DEFAULT_LOGIN, authorities = AuthoritiesConstants.ADMIN)
     void getAllUsers() throws Exception {
         // Initialize the database
+        Entreprise entreprise = new Entreprise();
+        entreprise.setIdEntreprise("TEST");
+        entreprise.setNomEntreprise("Test");
+        em.persist(entreprise);
+        em.flush();
+
+        user.setRole(Role.ADMIN);
+        user.setEntreprise(entreprise);
         userRepository.saveAndFlush(user);
 
         // Get all the users

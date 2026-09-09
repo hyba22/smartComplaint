@@ -3,7 +3,6 @@ package com.reclamation.chat.service;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 import org.slf4j.Logger;
@@ -29,7 +28,7 @@ public class LocalStorageProvider implements StorageProvider {
 
     @Override
     public StoredFile store(MultipartFile file, String type) throws IOException {
-        Path uploadPath = Paths.get(uploadDir, type);
+        Path uploadPath = Path.of(uploadDir, type);
         if (!Files.exists(uploadPath)) {
             Files.createDirectories(uploadPath);
         }
@@ -51,7 +50,7 @@ public class LocalStorageProvider implements StorageProvider {
 
     @Override
     public void delete(String reference) throws IOException {
-        Path rootDir = Paths.get(uploadDir).toAbsolutePath().normalize();
+        Path rootDir = Path.of(uploadDir).toAbsolutePath().normalize();
         Path target = rootDir.resolve(reference).normalize();
         if (!target.startsWith(rootDir)) {
             throw new SecurityException("Invalid file path: " + reference);
@@ -61,7 +60,7 @@ public class LocalStorageProvider implements StorageProvider {
     }
 
     public Path getFilePath(String reference) throws IOException {
-        Path rootDir = Paths.get(uploadDir).toAbsolutePath().normalize();
+        Path rootDir = Path.of(uploadDir).toAbsolutePath().normalize();
         Path target = rootDir.resolve(reference).normalize();
         if (!target.startsWith(rootDir)) {
             throw new SecurityException("Invalid file path: " + reference);

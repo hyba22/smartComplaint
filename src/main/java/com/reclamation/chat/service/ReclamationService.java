@@ -439,7 +439,7 @@ public class ReclamationService {
             if (reclamation.getCreatedBy() != null) {
                 Optional<User> clientOpt = userRepository.findOneByLogin(reclamation.getCreatedBy());
                 if (clientOpt.isPresent()) {
-                    User client = clientOpt.get();
+                    User client = clientOpt.orElseThrow();
                     clientName =
                         client.getFirstName() != null && client.getLastName() != null
                             ? client.getFirstName() + " " + client.getLastName()
@@ -483,7 +483,7 @@ public class ReclamationService {
                 return;
             }
 
-            Reclamation reclamationToAssign = reclamationOpt.get();
+            Reclamation reclamationToAssign = reclamationOpt.orElseThrow();
 
             log.info("Starting async AI assignment for reclamation {}", reclamationToAssign.getIdReclamation());
             CloudflareAIService.AssignmentResult assignmentResult = cloudflareAIService.assignReclamationWithAI(reclamationToAssign);
@@ -502,7 +502,7 @@ public class ReclamationService {
                 if (createdByLogin != null) {
                     Optional<User> clientOpt = userRepository.findOneByLogin(createdByLogin);
                     if (clientOpt.isPresent()) {
-                        User client = clientOpt.get();
+                        User client = clientOpt.orElseThrow();
                         notificationService.sendAssignmentNotification(
                             reclamationToAssign,
                             client,

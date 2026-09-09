@@ -9,6 +9,12 @@
 # ===================================================================
 
 spring:
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.mail.autoconfigure.MailSenderValidatorAutoConfiguration
+      - org.springframework.boot.mail.autoconfigure.MailHealthContributorAutoConfiguration
+  messages:
+    basename: i18n/messages
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     hikari:
@@ -30,3 +36,17 @@ spring:
       hibernate.jdbc.time_zone: UTC
       hibernate.timezone.default_storage: NORMALIZE
       hibernate.query.fail_on_pagination_over_collection_fetch: true
+
+management:
+  health:
+    mail:
+      enabled: false
+
+jhipster:
+  security:
+    authentication:
+      jwt:
+        base64-secret: ZDBjMzkxMDIwNTA0MGVkNmU3YmRmOTRiYjNmY2ZiYmU4ODMzYzI4ZGRlNjMxNmE5Y2E0YTFhM2NiNDkyODY4NTcyNTZmNjQ5NGFmNThlYzkwODc5NzE4MGFjMWU3MDhkMmUxYmI5N2MwMTJlMWRkYjczNTc2Y2E2MDJjMDNkOGE=
+  mail:
+    from: test@localhost
+    base-url: http://127.0.0.1:8282

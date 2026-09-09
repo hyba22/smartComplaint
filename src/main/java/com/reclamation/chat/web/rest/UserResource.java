@@ -182,10 +182,10 @@ public class UserResource {
     public ResponseEntity<List<AdminUserDTO>> getUsersByCurrentEntreprise() {
         LOG.debug("REST request to get users for current user's entreprise");
         Optional<User> currentUserOpt = userService.getUserWithAuthorities();
-        if (currentUserOpt.isEmpty() || currentUserOpt.get().getEntreprise() == null) {
+        if (currentUserOpt.isEmpty() || currentUserOpt.orElseThrow().getEntreprise() == null) {
             return ResponseEntity.ok(Collections.emptyList());
         }
-        User currentUser = currentUserOpt.get();
+        User currentUser = currentUserOpt.orElseThrow();
         Long entrepriseId = currentUser.getEntreprise().getId();
         String currentLogin = currentUser.getLogin();
 

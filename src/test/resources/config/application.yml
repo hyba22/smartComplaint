@@ -1,0 +1,18 @@
+# ===================================================================
+# Spring Boot configuration for tests
+# ===================================================================
+
+spring:
+  application:
+    name: SmartComplaint
+
+server:
+  port: 8282
+
+jhipster:
+  security:
+    authentication:
+      jwt:
+        base64-secret: ZDBjMzkxMDIwNTA0MGVkNmU3YmRmOTRiYjNmY2ZiYmU4ODMzYzI4ZGRlNjMxNmE5Y2E0YTFhM2NiNDkyODY4NTcyNTZmNjQ5NGFmNThlYzkwODc5NzE4MGFjMWU3MDhkMmUxYmI5N2MwMTJlMWRkYjczNTc2Y2E2MDJjMDNkOGE=
+        token-validity-in-seconds: 86400
+        token-validity-in-seconds-for-remember-me: 2592000

@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -28,10 +29,10 @@ public class CloudflareAIService {
 
     private static final Logger log = LoggerFactory.getLogger(CloudflareAIService.class);
 
-    @Value("${cloudflare.ai.account-id}")
+    @Value("${cloudflare.ai.account-id:}")
     private String accountId;
 
-    @Value("${cloudflare.ai.api-token}")
+    @Value("${cloudflare.ai.api-token:}")
     private String apiToken;
 
     private final RestTemplate restTemplate;
@@ -43,7 +44,7 @@ public class CloudflareAIService {
     public CloudflareAIService(
         UserRepository userRepository,
         ReclamationRepository reclamationRepository,
-        ActivityService activityService
+        @Autowired(required = false) ActivityService activityService
     ) {
         this.restTemplate = new RestTemplate();
         this.objectMapper = new ObjectMapper();
@@ -163,7 +164,7 @@ public class CloudflareAIService {
                 .findFirst();
 
             if (selectedConseiller.isPresent()) {
-                User conseiller = selectedConseiller.get();
+                User conseiller = selectedConseiller.orElseThrow();
 
                 // Assign the reclamation
                 reclamation.setAssignedTo(conseiller);
@@ -202,7 +203,7 @@ public class CloudflareAIService {
             int workload = reclamationRepository.countActiveReclamationsByConseiller(c.getId());
 
             // real online status
-            boolean isOnline = activityService.isUserOnline(c.getLogin());
+            boolean isOnline = activityService != null && activityService.isUserOnline(c.getLogin());
 
             conseillerList.append(
                 String.format(
